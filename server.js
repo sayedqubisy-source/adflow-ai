@@ -5,12 +5,14 @@ import fs from 'fs';
 import path from 'path';
 
 const app = express();
+
 app.disable('x-powered-by');
-app.use(express.json({limit:'64kb'}));
+app.use(express.json({ limit: '64kb' }));
 app.use(express.static('public'));
 
 const dbPath = process.env.DB_PATH || '/app/data/adflow.sqlite';
-fs.mkdirSync(path.dirname(path.resolve(dbPath)), {recursive:true});
+
+fs.mkdirSync(path.dirname(path.resolve(dbPath)), { recursive: true });
 
 const db = new Database(dbPath);
 db.pragma('journal_mode=WAL');
@@ -41,116 +43,160 @@ CREATE TABLE IF NOT EXISTS usage(
 `);
 
 const plans = {
- starter:{credits:100,price_usd:19},
- growth:{credits:500,price_usd:49},
- scale:{credits:2000,price_usd:149}
+ starter: { credits: 100, price_usd: 19 },
+ growth: { credits: 500, price_usd: 49 },
+ scale: { credits: 2000, price_usd: 149 }
 };
 
-const makeKey = () => `af_${crypto.randomBytes(24).toString('hex')}`;
+const makeKey = () =>
+ `af_${crypto.randomBytes(24).toString('hex')}`;
 
-const auth = (req,res,next) => {
+const auth = (req, res, next) => {
  const k = req.get('x-api-key');
+
  const u = k && db.prepare(
   'SELECT u.* FROM users u JOIN api_keys a ON a.user_id=u.id WHERE a.key=?'
  ).get(k);
 
- if(!u) return res.status(401).json({error:'invalid_api_key'});
+ if (!u) {
+  return res.status(401).json({ error: 'invalid_api_key' });
+ }
+
  req.user = u;
  next();
 };
 
-app.get('/api/health',(req,res)=>
- res.json({ok:true,service:'AdFlow AI',version:'1.0.0'})
-);
-
-app.get('/api/plans',(req,res)=>res.json(plans));
-
-app.post('/api/signup',(req,res)=>{
- const email=String(req.body.email||'').trim().toLowerCase();
-
- if(!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(email))
-  return res.status(400).json({error:'valid_email_required'});
-
- let u=db.prepare('SELECT * FROM users WHERE email=?').get(email);
-
- if(!u){
-  const r=db.prepare('INSERT INTO users(email) VALUES(?)').run(email);
-  u=db.prepare('SELECT * FROM users WHERE id=?').get(r.lastInsertRowid);
- }
-
- let k=db.prepare('SELECT key FROM api_keys WHERE user_id=?').get(u.id);
-
- if(!k){
-  k={key:makeKey()};
-  db.prepare('INSERT INTO api_keys(user_id,key) VALUES(?,?)').run(u.id,k.key);
- }
-
- res.status(201).json({
-  user:{
-   id:u.id,
-   email:u.email,
-   plan:u.plan,
-   credits:u.credits
-  },
-  api_key:k.key
+app.get('/api/health', (req, res) => {
+ res.json({
+  ok: true,
+  service: 'AdFlow AI',
+  version: '1.0.0'
  });
 });
 
-app.get('/api/me',auth,(req,res)=>
+app.get('/api/plans', (req, res) => {
+ res.json(plans);
+});
+
+app.post('/api/signup', (req, res) => {
+ const email = String(req.body.email || '')
+  .trim()
+  .toLowerCase();
+
+ if (!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(email)) {
+  return res.status(400).json({
+   error: 'valid_email_required'
+  });
+ }
+
+ let u = db.prepare(
+  'SELECT * FROM users WHERE email=?'
+ ).get(email);
+
+ if (!u) {
+  const r = db.prepare(
+   'INSERT INTO users(email) VALUES(?)'
+  ).run(email);
+
+  u = db.prepare(
+   'SELECT * FROM users WHERE id=?'
+  ).get(r.lastInsertRowid);
+ }
+
+ let k = db.prepare(
+  'SELECT key FROM api_keys WHERE user_id=?'
+ ).get(u.id);
+
+ if (!k) {
+  k = { key: makeKey() };
+
+  db.prepare(
+   'INSERT INTO api_keys(user_id,key) VALUES(?,?)'
+  ).run(u.id, k.key);
+ }
+
+ res.status(201).json({
+  user: {
+   id: u.id,
+   email: u.email,
+   plan: u.plan,
+   credits: u.credits
+  },
+  api_key: k.key
+ });
+});
+
+app.get('/api/me', auth, (req, res) => {
  res.json({
-  id:req.user.id,
-  email:req.user.email,
-  plan:req.user.plan,
-  credits:req.user.credits
- })
-);
+  id: req.user.id,
+  email: req.user.email,
+  plan: req.user.plan,
+  credits: req.user.credits
+ });
+});
 
-app.post('/api/generate',auth,(req,res)=>{
- if(req.user.credits<1)
-  return res.status(402).json({error:'credits_exhausted'});
+app.post('/api/generate', auth, (req, res) => {
+ if (req.user.credits < 1) {
+  return res.status(402).json({
+   error: 'credits_exhausted'
+  });
+ }
 
- const product=String(req.body.product||'product').slice(0,200);
+ const product = String(
+  req.body.product || 'product'
+ ).slice(0, 200);
 
- const data={
-  hook:`Stop scrolling — discover ${product} made for people who want more.`,
-  angles:['Problem → solution','Benefit-led','Social proof'],
-  cta:'Try it today',
-  formats:['9:16','1:1','16:9']
+ const data = {
+  hook: `Stop scrolling — discover ${product} made for people who want more.`,
+  angles: [
+   'Problem → solution',
+   'Benefit-led',
+   'Social proof'
+  ],
+  cta: 'Try it today',
+  formats: ['9:16', '1:1', '16:9']
  };
 
- db.transaction(()=>{
-  db.prepare('UPDATE users SET credits=credits-1 WHERE id=?').run(req.user.id);
+ db.transaction(() => {
+  db.prepare(
+   'UPDATE users SET credits=credits-1 WHERE id=?'
+  ).run(req.user.id);
+
   db.prepare(
    'INSERT INTO usage(user_id,endpoint,units) VALUES(?,?,1)'
-  ).run(req.user.id,'generate');
+  ).run(req.user.id, 'generate');
  })();
 
  res.json({
   data,
-  credits_remaining:req.user.credits-1
+  credits_remaining: req.user.credits - 1
  });
 });
 
-app.get('/api/usage',auth,(req,res)=>
+app.get('/api/usage', auth, (req, res) => {
  res.json({
-  credits:req.user.credits,
-  total_units:db.prepare(
+  credits: req.user.credits,
+  total_units: db.prepare(
    'SELECT COALESCE(SUM(units),0) n FROM usage WHERE user_id=?'
   ).get(req.user.id).n
- })
-);
+ });
+});
 
-app.post('/api/billing/checkout',auth,(req,res)=>
+app.post('/api/billing/checkout', auth, (req, res) => {
  res.status(501).json({
-  error:'payment_provider_not_configured',
-  message:'Set up a payment provider and webhook before accepting live payments.'
- })
-);
+  error: 'payment_provider_not_configured',
+  message: 'Set up a payment provider and webhook before accepting live payments.'
+ });
+});
 
-app.use((err,req,res,next)=>
- res.status(500).json({error:'internal_error'})
-);
+app.use((err, req, res, next) => {
+ res.status(500).json({
+  error: 'internal_error'
+ });
+});
 
-const port=Number(process.env.PORT||3000);
+const port = Number(process.env.PORT || 3000);
 
-app.listen(port,()=>console.log(`AdFlow AI listening on ${port}`));
+app.listen(port, () => {
+ console.log(`AdFlow AI listening on ${port}`);
+});
