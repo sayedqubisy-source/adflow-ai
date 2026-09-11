@@ -1,1 +1,50 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>AdFlow AI</title>
+</head>
+<body>
+  <h1>AdFlow AI</h1>
+  <p>AI-powered ad generation.</p>
 
+  <div>
+    <h2>Starter</h2>
+    <button onclick="subscribe('STARTER_PRICE_ID')">Subscribe</button>
+  </div>
+
+  <div>
+    <h2>Growth</h2>
+    <button onclick="subscribe('GROWTH_PRICE_ID')">Subscribe</button>
+  </div>
+
+  <div>
+    <h2>Scale</h2>
+    <button onclick="subscribe('SCALE_PRICE_ID')">Subscribe</button>
+  </div>
+
+  <script src="https://cdn.paddle.com/paddle/v2/paddle.js"></script>
+  <script>
+    Paddle.Initialize({
+      token: 'YOUR_LIVE_CLIENT_TOKEN'
+    });
+
+    function subscribe(priceId) {
+      Paddle.Checkout.open({
+        items: [
+          {
+            priceId: priceId,
+            quantity: 1
+          }
+        ],
+        settings: {
+          displayMode: 'overlay',
+          variant: 'one-page',
+          successUrl: window.location.origin + '/welcome'
+        }
+      });
+    }
+  </script>
+</body>
+</html>
