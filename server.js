@@ -67,10 +67,33 @@ const makeKey = () =>
 // JSON parser
 app.use(express.json({ limit: '64kb' }));
 
-// Serve index.html from project root
+// ===============================
+// Website pages
+// ===============================
+
+// Homepage
 app.get('/', (req, res) => {
   res.sendFile(path.join(process.cwd(), 'index.html'));
 });
+
+// Terms of Service
+app.get('/terms.html', (req, res) => {
+  res.sendFile(path.join(process.cwd(), 'terms.html'));
+});
+
+// Privacy Notice
+app.get('/privacy.html', (req, res) => {
+  res.sendFile(path.join(process.cwd(), 'privacy.html'));
+});
+
+// Refund Policy
+app.get('/refund.html', (req, res) => {
+  res.sendFile(path.join(process.cwd(), 'refund.html'));
+});
+
+// ===============================
+// Paddle
+// ===============================
 
 // Paddle client token config
 app.get('/api/config', (req, res) => {
@@ -101,7 +124,10 @@ app.get('/api/health', (req, res) => {
   });
 });
 
+// ===============================
 // Authentication
+// ===============================
+
 const auth = (req, res, next) => {
   const key = req.get('x-api-key');
 
@@ -122,7 +148,10 @@ const auth = (req, res, next) => {
   next();
 };
 
+// ===============================
 // Signup
+// ===============================
+
 app.post('/api/signup', (req, res) => {
   const email = String(req.body.email || '')
     .trim()
@@ -173,7 +202,10 @@ app.post('/api/signup', (req, res) => {
   });
 });
 
+// ===============================
 // Current user
+// ===============================
+
 app.get('/api/me', auth, (req, res) => {
   res.json({
     id: req.user.id,
@@ -183,7 +215,10 @@ app.get('/api/me', auth, (req, res) => {
   });
 });
 
+// ===============================
 // Generate ad content
+// ===============================
+
 app.post('/api/generate', auth, (req, res) => {
   if (req.user.credits < 1) {
     return res.status(402).json({
@@ -222,7 +257,10 @@ app.post('/api/generate', auth, (req, res) => {
   });
 });
 
+// ===============================
 // Usage
+// ===============================
+
 app.get('/api/usage', auth, (req, res) => {
   const total = db.prepare(`
     SELECT COALESCE(SUM(units), 0) AS n
@@ -236,7 +274,10 @@ app.get('/api/usage', auth, (req, res) => {
   });
 });
 
+// ===============================
 // Paddle checkout endpoint
+// ===============================
+
 app.post('/api/billing/checkout', auth, (req, res) => {
   const plan = String(req.body.plan || '').toLowerCase();
 
@@ -254,14 +295,20 @@ app.post('/api/billing/checkout', auth, (req, res) => {
   });
 });
 
+// ===============================
 // Successful checkout page
+// ===============================
+
 app.get('/welcome', (req, res) => {
   res.send(`
     <!DOCTYPE html>
     <html>
       <head>
         <meta charset="UTF-8">
-        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <meta
+          name="viewport"
+          content="width=device-width, initial-scale=1.0"
+        >
         <title>Welcome - AdFlow AI</title>
         <style>
           body {
@@ -270,14 +317,17 @@ app.get('/welcome', (req, res) => {
             padding: 80px 20px;
             background: #f7f7f7;
           }
+
           h1 {
             font-size: 40px;
           }
+
           p {
             font-size: 20px;
           }
         </style>
       </head>
+
       <body>
         <h1>Welcome to AdFlow AI 🎉</h1>
         <p>Your checkout was completed successfully.</p>
@@ -286,7 +336,10 @@ app.get('/welcome', (req, res) => {
   `);
 });
 
+// ===============================
 // Error handler
+// ===============================
+
 app.use((err, req, res, next) => {
   console.error(err);
 
@@ -294,6 +347,10 @@ app.use((err, req, res, next) => {
     error: 'internal_error'
   });
 });
+
+// ===============================
+// Start server
+// ===============================
 
 const port = Number(process.env.PORT || 3000);
 
