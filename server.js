@@ -7,196 +7,296 @@ import path from 'path';
 const app = express();
 
 app.disable('x-powered-by');
-app.use(express.json({ limit: '64kb' }));
-app.use(express.static('public'));
 
+// Database
 const dbPath = process.env.DB_PATH || '/app/data/adflow.sqlite';
 
-fs.mkdirSync(path.dirname(path.resolve(dbPath)), { recursive: true });
+fs.mkdirSync(path.dirname(path.resolve(dbPath)), {
+  recursive: true
+});
 
 const db = new Database(dbPath);
 db.pragma('journal_mode=WAL');
 
 db.exec(`
 CREATE TABLE IF NOT EXISTS users(
- id INTEGER PRIMARY KEY,
- email TEXT UNIQUE NOT NULL,
- plan TEXT NOT NULL DEFAULT 'starter',
- credits INTEGER NOT NULL DEFAULT 100,
- created_at TEXT DEFAULT CURRENT_TIMESTAMP
+  id INTEGER PRIMARY KEY,
+  email TEXT UNIQUE NOT NULL,
+  plan TEXT NOT NULL DEFAULT 'starter',
+  credits INTEGER NOT NULL DEFAULT 100,
+  created_at TEXT DEFAULT CURRENT_TIMESTAMP
 );
 
 CREATE TABLE IF NOT EXISTS api_keys(
- id INTEGER PRIMARY KEY,
- user_id INTEGER NOT NULL,
- key TEXT UNIQUE NOT NULL,
- created_at TEXT DEFAULT CURRENT_TIMESTAMP
+  id INTEGER PRIMARY KEY,
+  user_id INTEGER NOT NULL,
+  key TEXT UNIQUE NOT NULL,
+  created_at TEXT DEFAULT CURRENT_TIMESTAMP
 );
 
 CREATE TABLE IF NOT EXISTS usage(
- id INTEGER PRIMARY KEY,
- user_id INTEGER NOT NULL,
- endpoint TEXT NOT NULL,
- units INTEGER NOT NULL,
- created_at TEXT DEFAULT CURRENT_TIMESTAMP
+  id INTEGER PRIMARY KEY,
+  user_id INTEGER NOT NULL,
+  endpoint TEXT NOT NULL,
+  units INTEGER NOT NULL,
+  created_at TEXT DEFAULT CURRENT_TIMESTAMP
 );
 `);
 
 const plans = {
- starter: { credits: 100, price_usd: 19 },
- growth: { credits: 500, price_usd: 49 },
- scale: { credits: 2000, price_usd: 149 }
+  starter: {
+    credits: 100,
+    price_usd: 19,
+    price_id: 'pri_01m228xvs639e2q6bq8heh0mgq'
+  },
+  growth: {
+    credits: 500,
+    price_usd: 49,
+    price_id: 'pri_01m229502rmkzrj65zn60ee3ns'
+  },
+  scale: {
+    credits: 2000,
+    price_usd: 149,
+    price_id: 'pri_01m2296hjwyqhaxftffp7fkxg4'
+  }
 };
 
 const makeKey = () =>
- `af_${crypto.randomBytes(24).toString('hex')}`;
+  `af_${crypto.randomBytes(24).toString('hex')}`;
 
+// JSON parser
+app.use(express.json({ limit: '64kb' }));
+
+// Serve index.html from project root
+app.get('/', (req, res) => {
+  res.sendFile(path.join(process.cwd(), 'index.html'));
+});
+
+// Paddle client token config
+app.get('/api/config', (req, res) => {
+  const token = process.env.PADDLE_CLIENT_TOKEN;
+
+  if (!token) {
+    return res.status(500).json({
+      error: 'paddle_client_token_not_configured'
+    });
+  }
+
+  res.json({
+    paddleClientToken: token
+  });
+});
+
+// Public plans
+app.get('/api/plans', (req, res) => {
+  res.json(plans);
+});
+
+// Health check
+app.get('/api/health', (req, res) => {
+  res.json({
+    ok: true,
+    service: 'AdFlow AI',
+    version: '1.0.0'
+  });
+});
+
+// Authentication
 const auth = (req, res, next) => {
- const k = req.get('x-api-key');
+  const key = req.get('x-api-key');
 
- const u = k && db.prepare(
-  'SELECT u.* FROM users u JOIN api_keys a ON a.user_id=u.id WHERE a.key=?'
- ).get(k);
+  const user = key && db.prepare(`
+    SELECT u.*
+    FROM users u
+    JOIN api_keys a ON a.user_id = u.id
+    WHERE a.key = ?
+  `).get(key);
 
- if (!u) {
-  return res.status(401).json({ error: 'invalid_api_key' });
- }
+  if (!user) {
+    return res.status(401).json({
+      error: 'invalid_api_key'
+    });
+  }
 
- req.user = u;
- next();
+  req.user = user;
+  next();
 };
 
-app.get('/api/health', (req, res) => {
- res.json({
-  ok: true,
-  service: 'AdFlow AI',
-  version: '1.0.0'
- });
-});
-
-app.get('/api/plans', (req, res) => {
- res.json(plans);
-});
-
+// Signup
 app.post('/api/signup', (req, res) => {
- const email = String(req.body.email || '')
-  .trim()
-  .toLowerCase();
+  const email = String(req.body.email || '')
+    .trim()
+    .toLowerCase();
 
- if (!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(email)) {
-  return res.status(400).json({
-   error: 'valid_email_required'
+  if (!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(email)) {
+    return res.status(400).json({
+      error: 'valid_email_required'
+    });
+  }
+
+  let user = db.prepare(
+    'SELECT * FROM users WHERE email = ?'
+  ).get(email);
+
+  if (!user) {
+    const result = db.prepare(
+      'INSERT INTO users(email) VALUES(?)'
+    ).run(email);
+
+    user = db.prepare(
+      'SELECT * FROM users WHERE id = ?'
+    ).get(result.lastInsertRowid);
+  }
+
+  let apiKey = db.prepare(
+    'SELECT key FROM api_keys WHERE user_id = ?'
+  ).get(user.id);
+
+  if (!apiKey) {
+    apiKey = {
+      key: makeKey()
+    };
+
+    db.prepare(
+      'INSERT INTO api_keys(user_id, key) VALUES(?, ?)'
+    ).run(user.id, apiKey.key);
+  }
+
+  res.status(201).json({
+    user: {
+      id: user.id,
+      email: user.email,
+      plan: user.plan,
+      credits: user.credits
+    },
+    api_key: apiKey.key
   });
- }
-
- let u = db.prepare(
-  'SELECT * FROM users WHERE email=?'
- ).get(email);
-
- if (!u) {
-  const r = db.prepare(
-   'INSERT INTO users(email) VALUES(?)'
-  ).run(email);
-
-  u = db.prepare(
-   'SELECT * FROM users WHERE id=?'
-  ).get(r.lastInsertRowid);
- }
-
- let k = db.prepare(
-  'SELECT key FROM api_keys WHERE user_id=?'
- ).get(u.id);
-
- if (!k) {
-  k = { key: makeKey() };
-
-  db.prepare(
-   'INSERT INTO api_keys(user_id,key) VALUES(?,?)'
-  ).run(u.id, k.key);
- }
-
- res.status(201).json({
-  user: {
-   id: u.id,
-   email: u.email,
-   plan: u.plan,
-   credits: u.credits
-  },
-  api_key: k.key
- });
 });
 
+// Current user
 app.get('/api/me', auth, (req, res) => {
- res.json({
-  id: req.user.id,
-  email: req.user.email,
-  plan: req.user.plan,
-  credits: req.user.credits
- });
-});
-
-app.post('/api/generate', auth, (req, res) => {
- if (req.user.credits < 1) {
-  return res.status(402).json({
-   error: 'credits_exhausted'
+  res.json({
+    id: req.user.id,
+    email: req.user.email,
+    plan: req.user.plan,
+    credits: req.user.credits
   });
- }
-
- const product = String(
-  req.body.product || 'product'
- ).slice(0, 200);
-
- const data = {
-  hook: `Stop scrolling — discover ${product} made for people who want more.`,
-  angles: [
-   'Problem → solution',
-   'Benefit-led',
-   'Social proof'
-  ],
-  cta: 'Try it today',
-  formats: ['9:16', '1:1', '16:9']
- };
-
- db.transaction(() => {
-  db.prepare(
-   'UPDATE users SET credits=credits-1 WHERE id=?'
-  ).run(req.user.id);
-
-  db.prepare(
-   'INSERT INTO usage(user_id,endpoint,units) VALUES(?,?,1)'
-  ).run(req.user.id, 'generate');
- })();
-
- res.json({
-  data,
-  credits_remaining: req.user.credits - 1
- });
 });
 
+// Generate ad content
+app.post('/api/generate', auth, (req, res) => {
+  if (req.user.credits < 1) {
+    return res.status(402).json({
+      error: 'credits_exhausted'
+    });
+  }
+
+  const product = String(
+    req.body.product || 'product'
+  ).slice(0, 200);
+
+  const data = {
+    hook: `Stop scrolling — discover ${product} made for people who want more.`,
+    angles: [
+      'Problem → solution',
+      'Benefit-led',
+      'Social proof'
+    ],
+    cta: 'Try it today',
+    formats: ['9:16', '1:1', '16:9']
+  };
+
+  db.transaction(() => {
+    db.prepare(
+      'UPDATE users SET credits = credits - 1 WHERE id = ?'
+    ).run(req.user.id);
+
+    db.prepare(
+      'INSERT INTO usage(user_id, endpoint, units) VALUES(?, ?, 1)'
+    ).run(req.user.id, 'generate');
+  })();
+
+  res.json({
+    data,
+    credits_remaining: req.user.credits - 1
+  });
+});
+
+// Usage
 app.get('/api/usage', auth, (req, res) => {
- res.json({
-  credits: req.user.credits,
-  total_units: db.prepare(
-   'SELECT COALESCE(SUM(units),0) n FROM usage WHERE user_id=?'
-  ).get(req.user.id).n
- });
+  const total = db.prepare(`
+    SELECT COALESCE(SUM(units), 0) AS n
+    FROM usage
+    WHERE user_id = ?
+  `).get(req.user.id).n;
+
+  res.json({
+    credits: req.user.credits,
+    total_units: total
+  });
 });
 
+// Paddle checkout endpoint
 app.post('/api/billing/checkout', auth, (req, res) => {
- res.status(501).json({
-  error: 'payment_provider_not_configured',
-  message: 'Set up a payment provider and webhook before accepting live payments.'
- });
+  const plan = String(req.body.plan || '').toLowerCase();
+
+  if (!plans[plan]) {
+    return res.status(400).json({
+      error: 'invalid_plan'
+    });
+  }
+
+  res.json({
+    ok: true,
+    plan,
+    price_id: plans[plan].price_id,
+    message: 'Use Paddle Checkout on the client to complete payment.'
+  });
 });
 
+// Successful checkout page
+app.get('/welcome', (req, res) => {
+  res.send(`
+    <!DOCTYPE html>
+    <html>
+      <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>Welcome - AdFlow AI</title>
+        <style>
+          body {
+            font-family: Arial, sans-serif;
+            text-align: center;
+            padding: 80px 20px;
+            background: #f7f7f7;
+          }
+          h1 {
+            font-size: 40px;
+          }
+          p {
+            font-size: 20px;
+          }
+        </style>
+      </head>
+      <body>
+        <h1>Welcome to AdFlow AI 🎉</h1>
+        <p>Your checkout was completed successfully.</p>
+      </body>
+    </html>
+  `);
+});
+
+// Error handler
 app.use((err, req, res, next) => {
- res.status(500).json({
-  error: 'internal_error'
- });
+  console.error(err);
+
+  res.status(500).json({
+    error: 'internal_error'
+  });
 });
 
 const port = Number(process.env.PORT || 3000);
 
 app.listen(port, () => {
- console.log(`AdFlow AI listening on ${port}`);
+  console.log(`AdFlow AI listening on port ${port}`);
 });
