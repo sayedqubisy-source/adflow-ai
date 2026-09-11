@@ -8,7 +8,13 @@ const app = express();
 
 app.disable('x-powered-by');
 
+const ROOT = process.cwd();
+const PORT = Number(process.env.PORT || 3000);
+
+// =========================
 // Database
+// =========================
+
 const dbPath = process.env.DB_PATH || '/app/data/adflow.sqlite';
 
 fs.mkdirSync(path.dirname(path.resolve(dbPath)), {
@@ -16,6 +22,7 @@ fs.mkdirSync(path.dirname(path.resolve(dbPath)), {
 });
 
 const db = new Database(dbPath);
+
 db.pragma('journal_mode=WAL');
 
 db.exec(`
@@ -43,17 +50,23 @@ CREATE TABLE IF NOT EXISTS usage(
 );
 `);
 
+// =========================
+// Plans
+// =========================
+
 const plans = {
   starter: {
     credits: 100,
     price_usd: 19,
     price_id: 'pri_01m228xvs639e2q6bq8heh0mgq'
   },
+
   growth: {
     credits: 500,
     price_usd: 49,
     price_id: 'pri_01m229502rmkzrj65zn60ee3ns'
   },
+
   scale: {
     credits: 2000,
     price_usd: 149,
@@ -61,41 +74,84 @@ const plans = {
   }
 };
 
+// =========================
+// Helpers
+// =========================
+
 const makeKey = () =>
   `af_${crypto.randomBytes(24).toString('hex')}`;
 
-// JSON parser
-app.use(express.json({ limit: '64kb' }));
+const sendFileIfExists = (res, filename) => {
+  const filePath = path.join(ROOT, filename);
 
-// ===============================
-// Website pages
-// ===============================
+  if (!fs.existsSync(filePath)) {
+    return res.status(404).send(`
+      <!DOCTYPE html>
+      <html>
+      <head>
+        <meta charset="UTF-8">
+        <title>Not Found</title>
+      </head>
+      <body>
+        <h1>404 - File Not Found</h1>
+        <p>${filename} was not found on the server.</p>
+      </body>
+      </html>
+    `);
+  }
+
+  return res.sendFile(filePath);
+};
+
+// =========================
+// Middleware
+// =========================
+
+app.use(express.json({
+  limit: '64kb'
+}));
+
+// =========================
+// Website
+// =========================
 
 // Homepage
 app.get('/', (req, res) => {
-  res.sendFile(path.join(process.cwd(), 'index.html'));
+  sendFileIfExists(res, 'index.html');
 });
 
 // Terms of Service
 app.get('/terms.html', (req, res) => {
-  res.sendFile(path.join(process.cwd(), 'terms.html'));
+  sendFileIfExists(res, 'terms.html');
 });
 
 // Privacy Notice
 app.get('/privacy.html', (req, res) => {
-  res.sendFile(path.join(process.cwd(), 'privacy.html'));
+  sendFileIfExists(res, 'privacy.html');
 });
 
 // Refund Policy
 app.get('/refund.html', (req, res) => {
-  res.sendFile(path.join(process.cwd(), 'refund.html'));
+  sendFileIfExists(res, 'refund.html');
 });
 
-// ===============================
-// Paddle
-// ===============================
+// Also support clean URLs
+app.get('/terms', (req, res) => {
+  sendFileIfExists(res, 'terms.html');
+});
 
-// Paddle client token config
+app.get('/privacy', (req, res) => {
+  sendFileIfExists(res, 'privacy.html');
+});
+
+app.get('/refund', (req, res) => {
+  sendFileIfExists(res, 'refund.html');
+});
+
+// =========================
+// Paddle Client Token
+// =========================
+
 app.get('/api/config', (req, res) => {
   const token = process.env.PADDLE_CLIENT_TOKEN;
 
@@ -110,23 +166,29 @@ app.get('/api/config', (req, res) => {
   });
 });
 
-// Public plans
-app.get('/api/plans', (req, res) => {
-  res.json(plans);
-});
+// =========================
+// Health Check
+// =========================
 
-// Health check
 app.get('/api/health', (req, res) => {
   res.json({
     ok: true,
-    service: 'AdFlow AI',
+    service: 'SQ AI',
     version: '1.0.0'
   });
 });
 
-// ===============================
+// =========================
+// Public Plans
+// =========================
+
+app.get('/api/plans', (req, res) => {
+  res.json(plans);
+});
+
+// =========================
 // Authentication
-// ===============================
+// =========================
 
 const auth = (req, res, next) => {
   const key = req.get('x-api-key');
@@ -148,9 +210,9 @@ const auth = (req, res, next) => {
   next();
 };
 
-// ===============================
+// =========================
 // Signup
-// ===============================
+// =========================
 
 app.post('/api/signup', (req, res) => {
   const email = String(req.body.email || '')
@@ -202,9 +264,9 @@ app.post('/api/signup', (req, res) => {
   });
 });
 
-// ===============================
-// Current user
-// ===============================
+// =========================
+// Current User
+// =========================
 
 app.get('/api/me', auth, (req, res) => {
   res.json({
@@ -215,9 +277,9 @@ app.get('/api/me', auth, (req, res) => {
   });
 });
 
-// ===============================
-// Generate ad content
-// ===============================
+// =========================
+// Generate
+// =========================
 
 app.post('/api/generate', auth, (req, res) => {
   if (req.user.credits < 1) {
@@ -238,7 +300,11 @@ app.post('/api/generate', auth, (req, res) => {
       'Social proof'
     ],
     cta: 'Try it today',
-    formats: ['9:16', '1:1', '16:9']
+    formats: [
+      '9:16',
+      '1:1',
+      '16:9'
+    ]
   };
 
   db.transaction(() => {
@@ -248,7 +314,10 @@ app.post('/api/generate', auth, (req, res) => {
 
     db.prepare(
       'INSERT INTO usage(user_id, endpoint, units) VALUES(?, ?, 1)'
-    ).run(req.user.id, 'generate');
+    ).run(
+      req.user.id,
+      'generate'
+    );
   })();
 
   res.json({
@@ -257,9 +326,9 @@ app.post('/api/generate', auth, (req, res) => {
   });
 });
 
-// ===============================
+// =========================
 // Usage
-// ===============================
+// =========================
 
 app.get('/api/usage', auth, (req, res) => {
   const total = db.prepare(`
@@ -274,12 +343,14 @@ app.get('/api/usage', auth, (req, res) => {
   });
 });
 
-// ===============================
-// Paddle checkout endpoint
-// ===============================
+// =========================
+// Billing Checkout
+// =========================
 
 app.post('/api/billing/checkout', auth, (req, res) => {
-  const plan = String(req.body.plan || '').toLowerCase();
+  const plan = String(
+    req.body.plan || ''
+  ).toLowerCase();
 
   if (!plans[plan]) {
     return res.status(400).json({
@@ -295,50 +366,103 @@ app.post('/api/billing/checkout', auth, (req, res) => {
   });
 });
 
-// ===============================
-// Successful checkout page
-// ===============================
+// =========================
+// Welcome
+// =========================
 
 app.get('/welcome', (req, res) => {
   res.send(`
-    <!DOCTYPE html>
-    <html>
-      <head>
-        <meta charset="UTF-8">
-        <meta
-          name="viewport"
-          content="width=device-width, initial-scale=1.0"
-        >
-        <title>Welcome - AdFlow AI</title>
-        <style>
-          body {
-            font-family: Arial, sans-serif;
-            text-align: center;
-            padding: 80px 20px;
-            background: #f7f7f7;
-          }
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta
+    name="viewport"
+    content="width=device-width, initial-scale=1.0"
+  >
+  <title>Welcome - SQ AI</title>
 
-          h1 {
-            font-size: 40px;
-          }
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      text-align: center;
+      padding: 80px 20px;
+      background: #f7f7f7;
+      color: #111;
+    }
 
-          p {
-            font-size: 20px;
-          }
-        </style>
-      </head>
+    h1 {
+      font-size: 40px;
+    }
 
-      <body>
-        <h1>Welcome to AdFlow AI 🎉</h1>
-        <p>Your checkout was completed successfully.</p>
-      </body>
-    </html>
+    p {
+      font-size: 20px;
+      color: #555;
+    }
+
+    a {
+      display: inline-block;
+      margin-top: 20px;
+      color: #111;
+    }
+  </style>
+</head>
+
+<body>
+
+  <h1>Welcome to SQ AI 🎉</h1>
+
+  <p>
+    Your checkout was completed successfully.
+  </p>
+
+  <a href="/">
+    Back to SQ AI
+  </a>
+
+</body>
+</html>
   `);
 });
 
-// ===============================
-// Error handler
-// ===============================
+// =========================
+// 404
+// =========================
+
+app.use((req, res) => {
+  res.status(404).send(`
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>404 - SQ AI</title>
+</head>
+
+<body style="
+  font-family: Arial, sans-serif;
+  text-align: center;
+  padding: 80px 20px;
+">
+
+  <h1>404</h1>
+
+  <p>
+    Page not found.
+  </p>
+
+  <a href="/">
+    Go to SQ AI
+  </a>
+
+</body>
+</html>
+  `);
+});
+
+// =========================
+// Error Handler
+// =========================
 
 app.use((err, req, res, next) => {
   console.error(err);
@@ -348,12 +472,12 @@ app.use((err, req, res, next) => {
   });
 });
 
-// ===============================
-// Start server
-// ===============================
+// =========================
+// Start Server
+// =========================
 
-const port = Number(process.env.PORT || 3000);
-
-app.listen(port, () => {
-  console.log(`AdFlow AI listening on port ${port}`);
+app.listen(PORT, '0.0.0.0', () => {
+  console.log(
+    `SQ AI listening on port ${PORT}`
+  );
 });
