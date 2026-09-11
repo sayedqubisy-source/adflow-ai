@@ -4,27 +4,112 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>AdFlow AI</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      max-width: 1100px;
+      margin: 0 auto;
+      padding: 40px 20px;
+      background: #f7f7f7;
+      color: #111;
+    }
+
+    h1 {
+      text-align: center;
+      margin-bottom: 10px;
+    }
+
+    .subtitle {
+      text-align: center;
+      color: #666;
+      margin-bottom: 40px;
+    }
+
+    .plans {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 20px;
+    }
+
+    .plan {
+      background: white;
+      padding: 30px;
+      border-radius: 16px;
+      text-align: center;
+      box-shadow: 0 5px 20px rgba(0,0,0,.08);
+    }
+
+    .plan h2 {
+      margin-top: 0;
+    }
+
+    .price {
+      font-size: 32px;
+      font-weight: bold;
+      margin: 20px 0;
+    }
+
+    button {
+      width: 100%;
+      padding: 14px;
+      border: 0;
+      border-radius: 10px;
+      background: #111;
+      color: white;
+      font-size: 16px;
+      cursor: pointer;
+    }
+
+    button:hover {
+      opacity: .85;
+    }
+
+    @media (max-width: 800px) {
+      .plans {
+        grid-template-columns: 1fr;
+      }
+    }
+  </style>
 </head>
+
 <body>
+
   <h1>AdFlow AI</h1>
-  <p>AI-powered ad generation.</p>
+  <p class="subtitle">AI-powered advertising tools</p>
 
-  <div>
-    <h2>Starter</h2>
-    <button onclick="subscribe('STARTER_PRICE_ID')">Subscribe</button>
-  </div>
+  <div class="plans">
 
-  <div>
-    <h2>Growth</h2>
-    <button onclick="subscribe('GROWTH_PRICE_ID')">Subscribe</button>
-  </div>
+    <div class="plan">
+      <h2>Starter</h2>
+      <p>For getting started</p>
+      <div class="price">$19 / month</div>
+      <button onclick="subscribe('pri_01m228xvs639e2q6bq8heh0mgq')">
+        Subscribe
+      </button>
+    </div>
 
-  <div>
-    <h2>Scale</h2>
-    <button onclick="subscribe('SCALE_PRICE_ID')">Subscribe</button>
+    <div class="plan">
+      <h2>Pro</h2>
+      <p>For growing businesses</p>
+      <div class="price">$49 / month</div>
+      <button onclick="subscribe('pri_01m229502rmkzrj65zn60ee3ns')">
+        Subscribe
+      </button>
+    </div>
+
+    <div class="plan">
+      <h2>Advanced</h2>
+      <p>For high-volume businesses</p>
+      <div class="price">$149 / month</div>
+      <button onclick="subscribe('pri_01m2296hjwyqhaxftffp7fkxg4')">
+        Subscribe
+      </button>
+    </div>
+
   </div>
 
   <script src="https://cdn.paddle.com/paddle/v2/paddle.js"></script>
+
   <script>
     Paddle.Initialize({
       token: 'YOUR_LIVE_CLIENT_TOKEN'
@@ -46,5 +131,6 @@
       });
     }
   </script>
+
 </body>
 </html>
