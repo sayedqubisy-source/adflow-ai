@@ -312,8 +312,19 @@ function buildToolPrompt(tool, input, request = {}) {
   return `${instructions[tool.id] || 'Create the best possible result for the request.'}\n\nUser request:\n${input}${context}\n\nReturn only the useful result, without discussing internal tools or providers.`;
 }
 
+const TEXT_TOOL_CATEGORIES = new Set(['video','content','ads']);
+const TEXT_TOOL_IDS = new Set([
+  'video_script','ad_video','product_video','shorts','long_to_shorts','hooks','voiceover','subtitles',
+  'writer','ad_copy','content_hooks','captions','script','product_description','cta','rewrite','summarize','translate','content_calendar','persona','audience_analysis',
+  'campaign_generator','audience','strategy','ad_hooks','ad_copy_ads','creative_concepts','video_script_ads','campaign_cta','campaign_plan','competitor_analysis','budget_roas'
+]);
+function isTextGenerationTool(tool) {
+  return TEXT_TOOL_IDS.has(tool.id) || TEXT_TOOL_CATEGORIES.has(tool.category) && tool.category !== 'image';
+}
+
 async function aiEngine({ tool, type, input, request }) {
-  const kind = ['video','image','audio','text'].includes(type) ? type : (['image','video'].includes(tool.category) ? tool.category : 'text');
+  const requestedKind = ['video','image','audio','text'].includes(type) ? type : null;
+  const kind = isTextGenerationTool(tool) ? 'text' : (requestedKind || (['image','video'].includes(tool.category) ? tool.category : 'text'));
   const status = providerStatus(kind);
   if (!status.configured) return { ok:false, error:'provider_not_configured', message:`No ${kind} AI provider is configured yet.`, tool:tool.id, category:tool.category, engine:'SQ AI Engine', provider:null };
   if (status.provider === 'openrouter' && kind === 'text') {
