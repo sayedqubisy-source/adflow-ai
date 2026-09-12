@@ -141,7 +141,7 @@ function spendCredit(userId, endpoint, tool) {
 }
 
 app.use(express.static('public'));
-app.get('/api/health', (req, res) => res.json({ ok: true, service: 'SQ AI', version: '3.0.0' }));
+app.get('/api/health', (req, res) => res.json({ ok: true, service: 'SQ AI', version: '3.1.0' }));
 app.get('/api/plans', (req, res) => res.json(plans));
 
 app.post('/api/auth/signup', async (req, res) => {
@@ -229,7 +229,20 @@ function providerStatus(type) {
 }
 
 const OPENROUTER_URL = 'https://openrouter.ai/api/v1/chat/completions';
+const OPENROUTER_VIDEO_URL = 'https://openrouter.ai/api/v1/videos';
 const OPENROUTER_DEFAULT_MODEL = process.env.OPENROUTER_MODEL || 'openrouter/free';
+const OPENROUTER_VIDEO_DEFAULT_MODEL = process.env.OPENROUTER_VIDEO_MODEL || 'bytedance/seedance-2.0-mini';
+
+function openRouterHeaders() {
+  const apiKey = process.env.OPENROUTER_API_KEY;
+  return {
+    Authorization:`Bearer ${apiKey}`,
+    'Content-Type':'application/json',
+    'HTTP-Referer':process.env.OPENROUTER_SITE_URL || 'https://sq-ai.bonto.run/',
+    'X-OpenRouter-Title':'SQ AI'
+  };
+}
+
 async function callOpenRouter(prompt, options = {}) {
   const apiKey = process.env.OPENROUTER_API_KEY;
   if (!apiKey) return { ok:false, error:'provider_not_configured', message:'OPENROUTER_API_KEY is not configured.' };
@@ -243,16 +256,7 @@ async function callOpenRouter(prompt, options = {}) {
     max_tokens: options.max_tokens ?? 1200
   };
   try {
-    const response = await fetch(OPENROUTER_URL, {
-      method:'POST',
-      headers:{
-        Authorization:`Bearer ${apiKey}`,
-        'Content-Type':'application/json',
-        'HTTP-Referer':process.env.OPENROUTER_SITE_URL || 'https://sq-ai.bonto.run/',
-        'X-OpenRouter-Title':'SQ AI'
-      },
-      body:JSON.stringify(body)
-    });
+    const response = await fetch(OPENROUTER_URL, { method:'POST', headers:openRouterHeaders(), body:JSON.stringify(body) });
     const data = await response.json().catch(() => ({}));
     if (!response.ok) {
       console.error('openrouter_error', response.status, data);
@@ -264,6 +268,56 @@ async function callOpenRouter(prompt, options = {}) {
   } catch (error) {
     console.error('openrouter_network_error', error);
     return { ok:false, error:'provider_request_failed', message:'Could not reach OpenRouter.' };
+  }
+}
+
+function normalizeVideoOptions(request = {}, toolId) {
+  const aspectRatio = String(request.aspect_ratio || request.aspectRatio || (toolId === 'shorts' ? '9:16' : '16:9'));
+  const duration = Math.max(4, Math.min(15, Number(request.duration || 4)));
+  const resolution = String(request.resolution || '480p');
+  const generateAudio = request.generate_audio === undefined ? false : Boolean(request.generate_audio);
+  return { duration, resolution, aspect_ratio:aspectRatio, generate_audio:generateAudio };
+}
+
+async function submitOpenRouterVideo(prompt, options = {}) {
+  const apiKey = process.env.OPENROUTER_API_KEY;
+  if (!apiKey) return { ok:false, error:'provider_not_configured', message:'OPENROUTER_API_KEY is not configured.' };
+  const body = {
+    model: options.model || OPENROUTER_VIDEO_DEFAULT_MODEL,
+    prompt,
+    duration: options.duration ?? 4,
+    resolution: options.resolution || '480p',
+    aspect_ratio: options.aspect_ratio || '16:9',
+    generate_audio: options.generate_audio ?? false
+  };
+  if (Array.isArray(options.input_references) && options.input_references.length) body.input_references = options.input_references;
+  if (Array.isArray(options.frame_images) && options.frame_images.length) body.frame_images = options.frame_images;
+  try {
+    const response = await fetch(OPENROUTER_VIDEO_URL, { method:'POST', headers:openRouterHeaders(), body:JSON.stringify(body) });
+    const data = await response.json().catch(() => ({}));
+    if (!response.ok) {
+      console.error('openrouter_video_error', response.status, data);
+      return { ok:false, error:'video_generation_failed', message:data?.error?.message || `OpenRouter video API returned HTTP ${response.status}.`, status:response.status };
+    }
+    if (!data?.id) return { ok:false, error:'video_job_missing', message:'OpenRouter did not return a video job id.' };
+    return { ok:true, job_id:data.id, status:data.status || 'pending', polling_url:data.polling_url || `${OPENROUTER_VIDEO_URL}/${data.id}`, provider:'openrouter', model:body.model, options:body };
+  } catch (error) {
+    console.error('openrouter_video_network_error', error);
+    return { ok:false, error:'video_generation_failed', message:'Could not reach OpenRouter video API.' };
+  }
+}
+
+async function getOpenRouterVideoJob(jobId) {
+  const apiKey = process.env.OPENROUTER_API_KEY;
+  if (!apiKey) return { ok:false, error:'provider_not_configured', message:'OPENROUTER_API_KEY is not configured.' };
+  try {
+    const response = await fetch(`${OPENROUTER_VIDEO_URL}/${encodeURIComponent(jobId)}`, { headers:openRouterHeaders() });
+    const data = await response.json().catch(() => ({}));
+    if (!response.ok) return { ok:false, error:'video_job_status_failed', message:data?.error?.message || `OpenRouter returned HTTP ${response.status}.`, status:response.status };
+    return { ok:true, ...data };
+  } catch (error) {
+    console.error('openrouter_video_status_error', error);
+    return { ok:false, error:'video_job_status_failed', message:'Could not reach OpenRouter video status endpoint.' };
   }
 }
 
@@ -312,26 +366,31 @@ function buildToolPrompt(tool, input, request = {}) {
   return `${instructions[tool.id] || 'Create the best possible result for the request.'}\n\nUser request:\n${input}${context}\n\nReturn only the useful result, without discussing internal tools or providers.`;
 }
 
-const TEXT_TOOL_CATEGORIES = new Set(['video','content','ads']);
 const TEXT_TOOL_IDS = new Set([
-  'video_script','ad_video','product_video','shorts','long_to_shorts','hooks','voiceover','subtitles',
+  'video_script','hooks','voiceover','subtitles','long_to_shorts',
   'writer','ad_copy','content_hooks','captions','script','product_description','cta','rewrite','summarize','translate','content_calendar','persona','audience_analysis',
   'campaign_generator','audience','strategy','ad_hooks','ad_copy_ads','creative_concepts','video_script_ads','campaign_cta','campaign_plan','competitor_analysis','budget_roas'
 ]);
-function isTextGenerationTool(tool) {
-  return TEXT_TOOL_IDS.has(tool.id) || TEXT_TOOL_CATEGORIES.has(tool.category) && tool.category !== 'image';
-}
+const VIDEO_GENERATION_TOOL_IDS = new Set(['ad_video','product_video','shorts']);
+function isTextGenerationTool(tool) { return TEXT_TOOL_IDS.has(tool.id); }
 
 async function aiEngine({ tool, type, input, request }) {
+  if (VIDEO_GENERATION_TOOL_IDS.has(tool.id)) {
+    if (!process.env.AI_VIDEO_PROVIDER) return { ok:false, error:'provider_not_configured', message:'No video AI provider is configured yet.', tool:tool.id, category:tool.category, engine:'SQ AI Engine', provider:null };
+    if (process.env.AI_VIDEO_PROVIDER !== 'openrouter') return { ok:false, error:'provider_adapter_not_implemented', message:`Provider ${process.env.AI_VIDEO_PROVIDER} is configured but its video adapter is not implemented yet.`, tool:tool.id, category:tool.category, engine:'SQ AI Engine', provider:process.env.AI_VIDEO_PROVIDER };
+    const promptResult = await callOpenRouter(buildToolPrompt(tool, input, request), { model:process.env.OPENROUTER_MODEL || OPENROUTER_DEFAULT_MODEL, max_tokens:900 });
+    if (!promptResult.ok) return promptResult;
+    const videoPrompt = `Create the actual video described below. Do not return a script or explanation. Generate realistic, polished visual motion suitable for a commercial SaaS creator.\n\n${promptResult.output}`;
+    return submitOpenRouterVideo(videoPrompt, { model:process.env.OPENROUTER_VIDEO_MODEL || OPENROUTER_VIDEO_DEFAULT_MODEL, ...normalizeVideoOptions(request, tool.id) });
+  }
   const requestedKind = ['video','image','audio','text'].includes(type) ? type : null;
-  const kind = isTextGenerationTool(tool) ? 'text' : (requestedKind || (['image','video'].includes(tool.category) ? tool.category : 'text'));
+  const kind = isTextGenerationTool(tool) ? 'text' : (requestedKind || (tool.category === 'image' ? 'image' : 'text'));
   const status = providerStatus(kind);
   if (!status.configured) return { ok:false, error:'provider_not_configured', message:`No ${kind} AI provider is configured yet.`, tool:tool.id, category:tool.category, engine:'SQ AI Engine', provider:null };
-  if (status.provider === 'openrouter' && kind === 'text') {
-    return callOpenRouter(buildToolPrompt(tool, input, request), { model:process.env.OPENROUTER_MODEL || OPENROUTER_DEFAULT_MODEL });
-  }
+  if (status.provider === 'openrouter' && kind === 'text') return callOpenRouter(buildToolPrompt(tool, input, request), { model:process.env.OPENROUTER_MODEL || OPENROUTER_DEFAULT_MODEL });
   return { ok:false, error:'provider_adapter_not_implemented', message:`Provider ${status.provider} is configured but its ${kind} adapter is not implemented yet.`, tool:tool.id, category:tool.category, engine:'SQ AI Engine', provider:status.provider };
 }
+
 app.get('/api/tools', (req,res) => res.json({ tools:allTools(), registry:TOOL_REGISTRY }));
 app.post('/api/tools/generate', auth, async (req,res) => {
   const tool = getTool(req.body.tool);
@@ -343,7 +402,39 @@ app.post('/api/tools/generate', auth, async (req,res) => {
   const result = await aiEngine({ tool, type:requestedType || tool.category, input, request:req.body });
   if (!result.ok) return res.status(result.status || 503).json(result);
   if (!spendCredit(req.user.id,'/api/tools/generate',tool.id)) return res.status(402).json({ error:'credits_exhausted' });
+  if (result.job_id) return res.status(202).json({ video_job:result.job_id, status:result.status, polling_url:`/api/video/jobs/${encodeURIComponent(result.job_id)}`, provider:result.provider, model:result.model, options:result.options, credits_remaining:getUserById(req.user.id).credits });
   res.json({ data:result.output, provider:result.provider, model:result.model, credits_remaining:getUserById(req.user.id).credits });
+});
+
+app.get('/api/video/jobs/:id', auth, async (req,res) => {
+  const result = await getOpenRouterVideoJob(req.params.id);
+  if (!result.ok) return res.status(result.status || 502).json(result);
+  const payload = { id:result.id || req.params.id, status:result.status, provider:'openrouter', model:result.model || OPENROUTER_VIDEO_DEFAULT_MODEL };
+  if (result.error) payload.error = result.error;
+  if (result.unsigned_urls) payload.video_url = result.unsigned_urls[0] || null;
+  payload.ready = result.status === 'completed';
+  res.json(payload);
+});
+
+app.get('/api/video/jobs/:id/content', auth, async (req,res) => {
+  const apiKey = process.env.OPENROUTER_API_KEY;
+  if (!apiKey) return res.status(503).json({ error:'provider_not_configured' });
+  try {
+    const index = Math.max(0, Number(req.query.index || 0));
+    const response = await fetch(`${OPENROUTER_VIDEO_URL}/${encodeURIComponent(req.params.id)}/content?index=${index}`, { headers:openRouterHeaders() });
+    if (!response.ok) {
+      const data = await response.text();
+      return res.status(response.status).send(data || 'Video content is not ready.');
+    }
+    res.setHeader('Content-Type', response.headers.get('content-type') || 'video/mp4');
+    const contentLength = response.headers.get('content-length');
+    if (contentLength) res.setHeader('Content-Length', contentLength);
+    const buffer = Buffer.from(await response.arrayBuffer());
+    res.send(buffer);
+  } catch (error) {
+    console.error('video_content_error', error);
+    res.status(502).json({ error:'video_download_failed', message:'Could not download the generated video.' });
+  }
 });
 
 app.post('/api/generate', auth, (req,res) => {
