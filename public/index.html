@@ -1,29 +1,31 @@
 <!DOCTYPE html>
-<html lang="en" dir="ltr">
+<html lang="en">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <meta name="theme-color" content="#09090f" />
-  <meta name="description" content="SQ AI — Create videos, images, content and advertising campaigns with AI." />
-  <title>SQ AI — AI Creative Studio</title>
+  <meta name="theme-color" content="#0b0d12" />
+  <meta name="description" content="SQ AI — Create smarter content, ads, images and videos with AI." />
+  <title>SQ AI — AI Creation Studio</title>
 
   <style>
     :root {
-      --bg: #08090d;
-      --bg-soft: #0d0f16;
-      --panel: #11131b;
-      --panel-2: #151824;
+      --bg: #080a0f;
+      --bg-soft: #0d1017;
+      --panel: #11151d;
+      --panel-2: #151a23;
+      --panel-3: #1a202b;
       --border: rgba(255,255,255,.08);
       --border-strong: rgba(255,255,255,.14);
       --text: #f5f7fb;
-      --muted: #969cab;
-      --primary: #7c5cff;
-      --primary-2: #5b8cff;
-      --success: #35d07f;
-      --danger: #ff5d6c;
-      --warning: #ffbd5a;
+      --muted: #929aaa;
+      --muted-2: #687080;
+      --accent: #7c5cff;
+      --accent-2: #9b85ff;
+      --success: #32d583;
+      --danger: #ff5d73;
+      --warning: #f5b942;
       --radius: 18px;
-      --shadow: 0 20px 60px rgba(0,0,0,.35);
+      --shadow: 0 18px 60px rgba(0,0,0,.28);
     }
 
     * {
@@ -39,11 +41,20 @@
     body {
       min-height: 100vh;
       background:
-        radial-gradient(circle at 15% 0%, rgba(124,92,255,.13), transparent 30%),
-        radial-gradient(circle at 90% 10%, rgba(91,140,255,.09), transparent 28%),
+        radial-gradient(circle at 20% 0%, rgba(124,92,255,.10), transparent 28%),
+        radial-gradient(circle at 90% 20%, rgba(64,132,255,.07), transparent 25%),
         var(--bg);
       color: var(--text);
-      font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      font-family:
+        Inter,
+        ui-sans-serif,
+        system-ui,
+        -apple-system,
+        BlinkMacSystemFont,
+        "Segoe UI",
+        sans-serif;
+      line-height: 1.5;
+      overflow-x: hidden;
     }
 
     button,
@@ -54,7 +65,6 @@
     }
 
     button {
-      border: 0;
       cursor: pointer;
     }
 
@@ -67,99 +77,107 @@
       display: none !important;
     }
 
-    .container {
-      width: min(1180px, calc(100% - 32px));
-      margin: 0 auto;
+    .loading {
+      opacity: .65;
+      pointer-events: none;
+    }
+
+    .muted {
+      color: var(--muted);
+    }
+
+    .small {
+      font-size: 13px;
     }
 
     /* =========================
        LANDING
     ========================= */
 
-    .landing {
+    #landing {
       min-height: 100vh;
     }
 
-    .landing-header {
-      position: sticky;
-      top: 0;
-      z-index: 50;
-      border-bottom: 1px solid var(--border);
-      background: rgba(8,9,13,.78);
-      backdrop-filter: blur(20px);
-    }
-
     .landing-nav {
-      min-height: 72px;
+      height: 74px;
+      max-width: 1200px;
+      margin: auto;
+      padding: 0 24px;
       display: flex;
       align-items: center;
       justify-content: space-between;
-      gap: 20px;
     }
 
     .brand {
-      display: flex;
+      display: inline-flex;
       align-items: center;
-      gap: 11px;
+      gap: 10px;
       font-weight: 800;
-      letter-spacing: -.03em;
+      letter-spacing: -.5px;
     }
 
     .brand-mark {
-      width: 38px;
-      height: 38px;
-      border-radius: 12px;
+      width: 34px;
+      height: 34px;
+      border-radius: 11px;
       display: grid;
       place-items: center;
-      background: linear-gradient(135deg, var(--primary), var(--primary-2));
-      box-shadow: 0 8px 30px rgba(124,92,255,.3);
+      background: linear-gradient(135deg, var(--accent), #4c8dff);
+      box-shadow: 0 8px 25px rgba(124,92,255,.28);
       font-weight: 900;
     }
 
     .brand-name {
-      font-size: 20px;
+      font-size: 18px;
     }
 
-    .nav-actions {
+    .landing-nav-actions {
       display: flex;
-      align-items: center;
       gap: 10px;
     }
 
     .btn {
-      min-height: 44px;
-      padding: 0 17px;
-      border-radius: 12px;
       border: 1px solid var(--border);
       background: var(--panel);
       color: var(--text);
+      min-height: 42px;
+      padding: 0 17px;
+      border-radius: 12px;
       transition: .2s ease;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
     }
 
     .btn:hover {
-      transform: translateY(-1px);
       border-color: var(--border-strong);
-      background: var(--panel-2);
+      transform: translateY(-1px);
     }
 
     .btn-primary {
-      background: linear-gradient(135deg, var(--primary), var(--primary-2));
+      background: linear-gradient(135deg, var(--accent), #6650d9);
       border-color: transparent;
-      box-shadow: 0 10px 30px rgba(124,92,255,.22);
+      box-shadow: 0 12px 30px rgba(124,92,255,.2);
     }
 
     .btn-primary:hover {
-      filter: brightness(1.08);
+      box-shadow: 0 16px 38px rgba(124,92,255,.3);
+    }
+
+    .btn-ghost {
+      background: transparent;
     }
 
     .btn-danger {
-      color: #fff;
-      background: rgba(255,93,108,.12);
-      border-color: rgba(255,93,108,.2);
+      color: #ffb5bf;
+      border-color: rgba(255,93,115,.2);
     }
 
     .hero {
-      padding: 100px 0 70px;
+      max-width: 1200px;
+      margin: auto;
+      padding: 85px 24px 70px;
       text-align: center;
     }
 
@@ -167,36 +185,36 @@
       display: inline-flex;
       align-items: center;
       gap: 8px;
-      padding: 8px 13px;
-      border: 1px solid rgba(124,92,255,.25);
-      background: rgba(124,92,255,.09);
+      padding: 7px 12px;
+      border: 1px solid rgba(124,92,255,.22);
       border-radius: 999px;
-      color: #cfc6ff;
+      background: rgba(124,92,255,.07);
+      color: #bdb2ff;
       font-size: 13px;
       margin-bottom: 25px;
     }
 
     .hero h1 {
       max-width: 850px;
-      margin: 0 auto;
-      font-size: clamp(44px, 7vw, 78px);
+      margin: auto;
+      font-size: clamp(42px, 7vw, 78px);
       line-height: .98;
-      letter-spacing: -.065em;
+      letter-spacing: -4px;
+      font-weight: 850;
     }
 
     .hero h1 span {
-      background: linear-gradient(90deg, #fff, #9d8cff, #7ca9ff);
+      background: linear-gradient(135deg, #fff, #a899ff, #74a4ff);
       -webkit-background-clip: text;
       background-clip: text;
       color: transparent;
     }
 
     .hero p {
-      max-width: 680px;
-      margin: 28px auto 0;
+      max-width: 690px;
+      margin: 27px auto 0;
       color: var(--muted);
       font-size: 18px;
-      line-height: 1.7;
     }
 
     .hero-actions {
@@ -207,8 +225,47 @@
       flex-wrap: wrap;
     }
 
-    .landing-tools {
-      padding: 50px 0 100px;
+    .hero-actions .btn {
+      min-height: 50px;
+      padding: 0 22px;
+    }
+
+    .landing-grid {
+      max-width: 1120px;
+      margin: 20px auto 100px;
+      padding: 0 24px;
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 15px;
+    }
+
+    .landing-card {
+      padding: 23px;
+      min-height: 185px;
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      background: rgba(17,21,29,.75);
+    }
+
+    .landing-card-icon {
+      font-size: 27px;
+      margin-bottom: 18px;
+    }
+
+    .landing-card h3 {
+      font-size: 16px;
+      margin-bottom: 8px;
+    }
+
+    .landing-card p {
+      color: var(--muted);
+      font-size: 13px;
+    }
+
+    .landing-section {
+      max-width: 1120px;
+      margin: 0 auto 100px;
+      padding: 0 24px;
     }
 
     .section-title {
@@ -218,7 +275,7 @@
 
     .section-title h2 {
       font-size: 30px;
-      letter-spacing: -.04em;
+      letter-spacing: -1px;
     }
 
     .section-title p {
@@ -226,54 +283,35 @@
       margin-top: 8px;
     }
 
-    .landing-grid {
+    .workflow {
       display: grid;
-      grid-template-columns: repeat(4, 1fr);
-      gap: 16px;
+      grid-template-columns: repeat(7, 1fr);
+      gap: 8px;
     }
 
-    .landing-card {
-      padding: 25px;
-      min-height: 210px;
+    .workflow-step {
       border: 1px solid var(--border);
-      background: linear-gradient(180deg, rgba(255,255,255,.035), rgba(255,255,255,.015));
-      border-radius: 20px;
-      transition: .25s ease;
-    }
-
-    .landing-card:hover {
-      transform: translateY(-5px);
-      border-color: rgba(124,92,255,.3);
-      box-shadow: var(--shadow);
-    }
-
-    .landing-icon {
-      width: 48px;
-      height: 48px;
+      background: var(--panel);
+      padding: 18px 10px;
+      text-align: center;
       border-radius: 14px;
-      display: grid;
-      place-items: center;
-      background: rgba(124,92,255,.12);
-      margin-bottom: 20px;
-      font-size: 22px;
-    }
-
-    .landing-card h3 {
-      font-size: 18px;
-      margin-bottom: 8px;
-    }
-
-    .landing-card p {
+      font-size: 12px;
       color: var(--muted);
-      font-size: 14px;
-      line-height: 1.6;
+    }
+
+    .workflow-step strong {
+      display: block;
+      color: var(--text);
+      margin-bottom: 4px;
+      font-size: 13px;
     }
 
     .landing-footer {
       border-top: 1px solid var(--border);
-      padding: 30px 0;
+      padding: 30px 24px;
       color: var(--muted);
       font-size: 13px;
+      text-align: center;
     }
 
     /* =========================
@@ -283,84 +321,109 @@
     .modal-backdrop {
       position: fixed;
       inset: 0;
-      z-index: 200;
-      background: rgba(0,0,0,.7);
-      backdrop-filter: blur(10px);
+      z-index: 100;
       display: grid;
       place-items: center;
       padding: 20px;
+      background: rgba(0,0,0,.72);
+      backdrop-filter: blur(12px);
     }
 
-    .modal {
-      width: min(440px, 100%);
-      background: var(--panel);
+    .auth-modal {
+      width: min(430px, 100%);
+      background: #11151d;
       border: 1px solid var(--border-strong);
       border-radius: 22px;
       box-shadow: var(--shadow);
-      padding: 28px;
+      overflow: hidden;
     }
 
-    .modal-head {
+    .auth-head {
+      padding: 25px 25px 12px;
       display: flex;
       justify-content: space-between;
-      gap: 20px;
       align-items: flex-start;
-      margin-bottom: 24px;
     }
 
-    .modal-head h2 {
-      font-size: 25px;
+    .auth-head h2 {
+      font-size: 24px;
     }
 
-    .modal-head p {
+    .auth-head p {
       color: var(--muted);
-      margin-top: 6px;
       font-size: 13px;
+      margin-top: 5px;
     }
 
-    .close-btn {
-      width: 34px;
-      height: 34px;
+    .icon-btn {
+      width: 36px;
+      height: 36px;
       border-radius: 10px;
-      background: rgba(255,255,255,.05);
+      border: 1px solid var(--border);
+      background: transparent;
       color: var(--muted);
     }
 
-    .form-group {
+    .auth-tabs {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 5px;
+      margin: 15px 25px 0;
+      padding: 4px;
+      border-radius: 11px;
+      background: var(--bg);
+    }
+
+    .auth-tab {
+      border: 0;
+      background: transparent;
+      color: var(--muted);
+      border-radius: 8px;
+      padding: 9px;
+    }
+
+    .auth-tab.active {
+      background: var(--panel-3);
+      color: var(--text);
+    }
+
+    .auth-form {
+      padding: 20px 25px 25px;
+    }
+
+    .field {
       margin-bottom: 15px;
     }
 
-    .form-group label {
+    .field label {
       display: block;
+      color: #c5cad4;
+      font-size: 12px;
       margin-bottom: 7px;
-      font-size: 13px;
-      color: #c5c8d2;
     }
 
-    .input,
-    .textarea,
-    .select {
+    .field input,
+    .field textarea,
+    .field select {
       width: 100%;
       border: 1px solid var(--border);
-      background: #0b0d13;
+      border-radius: 11px;
+      background: #0b0e14;
       color: var(--text);
-      border-radius: 12px;
       outline: none;
-      padding: 13px 14px;
-      transition: .2s;
+      padding: 12px 13px;
     }
 
-    .input:focus,
-    .textarea:focus,
-    .select:focus {
-      border-color: rgba(124,92,255,.65);
-      box-shadow: 0 0 0 3px rgba(124,92,255,.1);
+    .field input:focus,
+    .field textarea:focus,
+    .field select:focus {
+      border-color: rgba(124,92,255,.6);
+      box-shadow: 0 0 0 3px rgba(124,92,255,.08);
     }
 
-    .textarea {
+    .field textarea {
       min-height: 150px;
       resize: vertical;
-      line-height: 1.6;
     }
 
     .auth-submit {
@@ -368,109 +431,4057 @@
       margin-top: 5px;
     }
 
-    .auth-switch {
-      margin-top: 18px;
-      text-align: center;
-      color: var(--muted);
+    .auth-error {
+      color: #ff9eaa;
       font-size: 13px;
-    }
-
-    .auth-switch button {
-      background: none;
-      color: #a999ff;
-      margin-left: 4px;
-    }
-
-    .error-box {
-      padding: 11px 13px;
-      border-radius: 10px;
-      background: rgba(255,93,108,.1);
-      border: 1px solid rgba(255,93,108,.18);
-      color: #ff9da7;
-      font-size: 13px;
-      margin-bottom: 14px;
+      margin-top: 12px;
+      min-height: 18px;
     }
 
     /* =========================
        APP
     ========================= */
 
-    .app {
+    #app {
       min-height: 100vh;
       display: flex;
     }
 
     .sidebar {
-      width: 255px;
-      flex: 0 0 255px;
-      height: 100vh;
+      width: 245px;
+      flex: 0 0 245px;
+      min-height: 100vh;
+      border-right: 1px solid var(--border);
+      background: rgba(10,12,17,.96);
+      padding: 20px 14px;
       position: sticky;
       top: 0;
-      border-right: 1px solid var(--border);
-      background: rgba(9,10,15,.92);
-      padding: 18px 14px;
+      height: 100vh;
       display: flex;
       flex-direction: column;
-      overflow-y: auto;
+      z-index: 40;
     }
 
     .sidebar-brand {
-      padding: 4px 8px 22px;
+      padding: 0 8px 24px;
     }
 
-    .sidebar-nav {
-      display: flex;
-      flex-direction: column;
-      gap: 4px;
+    .nav-group {
+      margin-top: 8px;
     }
 
     .nav-label {
-      color: #666b79;
+      color: var(--muted-2);
       font-size: 10px;
       text-transform: uppercase;
-      letter-spacing: .12em;
-      padding: 18px 10px 7px;
+      letter-spacing: 1px;
+      padding: 0 11px 7px;
     }
 
-    .side-btn {
+    .nav-item {
       width: 100%;
       display: flex;
       align-items: center;
       gap: 11px;
-      padding: 11px 12px;
-      border-radius: 11px;
+      min-height: 42px;
+      padding: 0 11px;
+      border: 0;
+      border-radius: 10px;
       background: transparent;
-      color: #9b9fab;
+      color: var(--muted);
       text-align: left;
-      transition: .2s;
+      margin-bottom: 2px;
     }
 
-    .side-btn:hover {
+    .nav-item:hover {
+      background: rgba(255,255,255,.035);
       color: var(--text);
-      background: rgba(255,255,255,.04);
     }
 
-    .side-btn.active {
-      color: #fff;
-      background: rgba(124,92,255,.14);
-      border: 1px solid rgba(124,92,255,.14);
+    .nav-item.active {
+      color: white;
+      background: rgba(124,92,255,.12);
     }
 
-    .side-icon {
-      width: 20px;
+    .nav-icon {
+      width: 22px;
       text-align: center;
     }
 
     .sidebar-bottom {
       margin-top: auto;
-      padding-top: 18px;
     }
 
-    .credits-box {
-      padding: 14px;
+    .credit-box {
+      padding: 13px;
+      background: var(--panel);
       border: 1px solid var(--border);
-      background: rgba(255,255,255,.025);
-      border-radius: 15px;
+      border-radius: 13px;
+      margin-bottom: 9px;
     }
 
-    .credits
+    .credit-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-size: 12px;
+      color: var(--muted);
+    }
+
+    .credit-number {
+      color: var(--text);
+      font-weight: 700;
+    }
+
+    .credit-bar {
+      height: 5px;
+      background: #242934;
+      border-radius: 999px;
+      margin-top: 9px;
+      overflow: hidden;
+    }
+
+    .credit-bar span {
+      display: block;
+      width: 60%;
+      height: 100%;
+      background: linear-gradient(90deg, var(--accent), #5f9aff);
+    }
+
+    .sidebar-user {
+      padding: 10px;
+      border-radius: 12px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .avatar {
+      width: 34px;
+      height: 34px;
+      border-radius: 10px;
+      display: grid;
+      place-items: center;
+      background: #252b36;
+      font-size: 12px;
+      font-weight: 800;
+    }
+
+    .sidebar-user-info {
+      min-width: 0;
+      flex: 1;
+    }
+
+    .sidebar-user-info strong {
+      display: block;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      font-size: 12px;
+    }
+
+    .sidebar-user-info span {
+      color: var(--muted);
+      font-size: 11px;
+    }
+
+    .main {
+      flex: 1;
+      min-width: 0;
+    }
+
+    .topbar {
+      height: 67px;
+      border-bottom: 1px solid var(--border);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 28px;
+      position: sticky;
+      top: 0;
+      z-index: 30;
+      background: rgba(8,10,15,.82);
+      backdrop-filter: blur(16px);
+    }
+
+    .mobile-menu {
+      display: none;
+    }
+
+    .topbar-title {
+      font-size: 15px;
+      font-weight: 700;
+    }
+
+    .topbar-actions {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .plan-pill {
+      font-size: 11px;
+      color: #c9c0ff;
+      background: rgba(124,92,255,.1);
+      border: 1px solid rgba(124,92,255,.2);
+      padding: 6px 9px;
+      border-radius: 999px;
+    }
+
+    .content {
+      max-width: 1250px;
+      margin: auto;
+      padding: 30px;
+    }
+
+    /* =========================
+       DASHBOARD
+    ========================= */
+
+    .welcome {
+      margin-bottom: 25px;
+    }
+
+    .welcome h1 {
+      font-size: 30px;
+      letter-spacing: -1px;
+    }
+
+    .welcome p {
+      color: var(--muted);
+      margin-top: 6px;
+    }
+
+    .create-box {
+      border: 1px solid var(--border);
+      border-radius: 20px;
+      background:
+        radial-gradient(circle at 85% 20%, rgba(124,92,255,.12), transparent 30%),
+        var(--panel);
+      padding: 25px;
+      margin-bottom: 25px;
+    }
+
+    .create-box h2 {
+      font-size: 20px;
+      margin-bottom: 14px;
+    }
+
+    .quick-input {
+      display: flex;
+      gap: 10px;
+    }
+
+    .quick-input input {
+      flex: 1;
+      min-width: 0;
+      border: 1px solid var(--border);
+      background: #0b0e14;
+      color: var(--text);
+      padding: 14px;
+      border-radius: 12px;
+      outline: none;
+    }
+
+    .category-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 13px;
+    }
+
+    .category-card {
+      border: 1px solid var(--border);
+      border-radius: 17px;
+      background: var(--panel);
+      padding: 20px;
+      min-height: 155px;
+      cursor: pointer;
+      transition: .2s ease;
+    }
+
+    .category-card:hover {
+      transform: translateY(-2px);
+      border-color: var(--border-strong);
+      background: var(--panel-2);
+    }
+
+    .category-card .icon {
+      font-size: 25px;
+      margin-bottom: 16px;
+    }
+
+    .category-card h3 {
+      font-size: 15px;
+    }
+
+    .category-card p {
+      color: var(--muted);
+      font-size: 12px;
+      margin-top: 5px;
+    }
+
+    .dashboard-columns {
+      display: grid;
+      grid-template-columns: 1.7fr 1fr;
+      gap: 18px;
+      margin-top: 20px;
+    }
+
+    .panel {
+      background: var(--panel);
+      border: 1px solid var(--border);
+      border-radius: 17px;
+      overflow: hidden;
+    }
+
+    .panel-head {
+      padding: 17px 18px;
+      border-bottom: 1px solid var(--border);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .panel-head h3 {
+      font-size: 14px;
+    }
+
+    .panel-body {
+      padding: 18px;
+    }
+
+    .project-list {
+      display: flex;
+      flex-direction: column;
+    }
+
+    .project-item {
+      padding: 14px 18px;
+      display: flex;
+      align-items: center;
+      gap: 13px;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .project-item:last-child {
+      border-bottom: 0;
+    }
+
+    .project-icon {
+      width: 38px;
+      height: 38px;
+      display: grid;
+      place-items: center;
+      background: #1b202a;
+      border-radius: 10px;
+    }
+
+    .project-main {
+      min-width: 0;
+      flex: 1;
+    }
+
+    .project-main strong {
+      display: block;
+      font-size: 13px;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .project-main span {
+      display: block;
+      color: var(--muted);
+      font-size: 11px;
+      margin-top: 3px;
+    }
+
+    .empty-state {
+      text-align: center;
+      padding: 35px 15px;
+      color: var(--muted);
+      font-size: 13px;
+    }
+
+    .stats {
+      display: grid;
+      gap: 11px;
+    }
+
+    .stat {
+      padding: 15px;
+      border: 1px solid var(--border);
+      background: #0e1219;
+      border-radius: 13px;
+    }
+
+    .stat span {
+      display: block;
+      color: var(--muted);
+      font-size: 11px;
+    }
+
+    .stat strong {
+      display: block;
+      font-size: 22px;
+      margin-top: 3px;
+    }
+
+    /* =========================
+       TOOL PAGE
+    ========================= */
+
+    .page-head {
+      margin-bottom: 22px;
+    }
+
+    .page-head h1 {
+      font-size: 27px;
+      letter-spacing: -.7px;
+    }
+
+    .page-head p {
+      color: var(--muted);
+      font-size: 13px;
+      margin-top: 5px;
+    }
+
+    .tool-layout {
+      display: grid;
+      grid-template-columns: 270px 1fr;
+      gap: 17px;
+    }
+
+    .tool-menu {
+      border: 1px solid var(--border);
+      border-radius: 17px;
+      background: var(--panel);
+      padding: 10px;
+      height: fit-content;
+    }
+
+    .tool-menu button {
+      width: 100%;
+      border: 0;
+      background: transparent;
+      color: var(--muted);
+      text-align: left;
+      border-radius: 11px;
+      padding: 11px;
+      margin-bottom: 3px;
+    }
+
+    .tool-menu button:hover,
+    .tool-menu button.active {
+      color: var(--text);
+      background: rgba(124,92,255,.11);
+    }
+
+    .tool-workspace {
+      min-width: 0;
+    }
+
+    .workspace-card {
+      border: 1px solid var(--border);
+      border-radius: 18px;
+      background: var(--panel);
+      padding: 23px;
+    }
+
+    .workspace-title {
+      margin-bottom: 18px;
+    }
+
+    .workspace-title h2 {
+      font-size: 19px;
+    }
+
+    .workspace-title p {
+      color: var(--muted);
+      font-size: 12px;
+      margin-top: 4px;
+    }
+
+    .result-box {
+      margin-top: 20px;
+      border: 1px solid var(--border);
+      background: #0a0d13;
+      border-radius: 14px;
+      min-height: 180px;
+      padding: 18px;
+      white-space: pre-wrap;
+      overflow-wrap: anywhere;
+    }
+
+    .result-actions {
+      display: flex;
+      gap: 8px;
+      margin-top: 10px;
+    }
+
+    /* =========================
+       CAMPAIGN
+    ========================= */
+
+    .campaign-steps {
+      display: grid;
+      grid-template-columns: repeat(8, 1fr);
+      gap: 7px;
+      margin-bottom: 18px;
+      overflow-x: auto;
+    }
+
+    .campaign-step {
+      min-width: 100px;
+      border: 1px solid var(--border);
+      border-radius: 11px;
+      padding: 10px;
+      text-align: center;
+      font-size: 11px;
+      color: var(--muted);
+      background: var(--panel);
+    }
+
+    .campaign-step.active {
+      color: white;
+      border-color: rgba(124,92,255,.4);
+      background: rgba(124,92,255,.1);
+    }
+
+    .campaign-form {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 15px;
+    }
+
+    .campaign-form .full {
+      grid-column: 1 / -1;
+    }
+
+    .campaign-result {
+      margin-top: 20px;
+      display: grid;
+      gap: 10px;
+    }
+
+    .campaign-output {
+      border: 1px solid var(--border);
+      background: #0b0e14;
+      border-radius: 13px;
+      padding: 15px;
+    }
+
+    .campaign-output h4 {
+      font-size: 12px;
+      margin-bottom: 7px;
+      color: #bcb3ff;
+    }
+
+    .campaign-output p {
+      color: #d8dbe2;
+      font-size: 13px;
+      white-space: pre-wrap;
+    }
+
+    /* =========================
+       PROJECTS
+    ========================= */
+
+    .projects-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 14px;
+    }
+
+    .project-card {
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      background: var(--panel);
+      padding: 17px;
+    }
+
+    .project-card-icon {
+      width: 40px;
+      height: 40px;
+      display: grid;
+      place-items: center;
+      border-radius: 11px;
+      background: #1a2029;
+      margin-bottom: 13px;
+    }
+
+    .project-card h3 {
+      font-size: 14px;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .project-card p {
+      color: var(--muted);
+      font-size: 11px;
+      margin-top: 5px;
+      min-height: 34px;
+    }
+
+    .project-card-actions {
+      display: flex;
+      gap: 7px;
+      margin-top: 15px;
+    }
+
+    .project-card-actions .btn {
+      min-height: 34px;
+      padding: 0 10px;
+      font-size: 11px;
+    }
+
+    /* =========================
+       PLANS
+    ========================= */
+
+    .plans-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 15px;
+    }
+
+    .plan-card {
+      border: 1px solid var(--border);
+      border-radius: 18px;
+      background: var(--panel);
+      padding: 23px;
+      position: relative;
+    }
+
+    .plan-card.featured {
+      border-color: rgba(124,92,255,.45);
+      box-shadow: 0 15px 50px rgba(124,92,255,.08);
+    }
+
+    .plan-badge {
+      position: absolute;
+      top: 15px;
+      right: 15px;
+      color: #c6bdff;
+      background: rgba(124,92,255,.1);
+      border-radius: 999px;
+      padding: 5px 8px;
+      font-size: 9px;
+    }
+
+    .plan-card h3 {
+      font-size: 17px;
+    }
+
+    .plan-price {
+      font-size: 35px;
+      font-weight: 800;
+      margin: 13px 0 4px;
+    }
+
+    .plan-price span {
+      color: var(--muted);
+      font-size: 12px;
+      font-weight: 400;
+    }
+
+    .plan-card > p {
+      color: var(--muted);
+      font-size: 12px;
+      min-height: 35px;
+    }
+
+    .plan-features {
+      list-style: none;
+      margin: 20px 0;
+      display: grid;
+      gap: 9px;
+    }
+
+    .plan-features li {
+      font-size: 12px;
+      color: #c7cbd4;
+    }
+
+    .plan-features li::before {
+      content: "✓";
+      color: var(--success);
+      margin-right: 7px;
+    }
+
+    .plan-card .btn {
+      width: 100%;
+    }
+
+    /* =========================
+       SETTINGS
+    ========================= */
+
+    .settings-grid {
+      display: grid;
+      grid-template-columns: 220px 1fr;
+      gap: 17px;
+    }
+
+    .settings-menu {
+      border: 1px solid var(--border);
+      background: var(--panel);
+      border-radius: 16px;
+      padding: 9px;
+      height: fit-content;
+    }
+
+    .settings-menu button {
+      width: 100%;
+      border: 0;
+      background: transparent;
+      color: var(--muted);
+      padding: 10px;
+      text-align: left;
+      border-radius: 9px;
+    }
+
+    .settings-menu button.active,
+    .settings-menu button:hover {
+      color: var(--text);
+      background: rgba(255,255,255,.04);
+    }
+
+    .settings-panel {
+      border: 1px solid var(--border);
+      background: var(--panel);
+      border-radius: 16px;
+      padding: 22px;
+    }
+
+    .settings-panel h2 {
+      font-size: 18px;
+      margin-bottom: 5px;
+    }
+
+    .settings-panel > p {
+      color: var(--muted);
+      font-size: 12px;
+      margin-bottom: 20px;
+    }
+
+    .settings-actions {
+      display: flex;
+      gap: 8px;
+      justify-content: flex-end;
+    }
+
+    /* =========================
+       TOAST
+    ========================= */
+
+    #toast {
+      position: fixed;
+      right: 20px;
+      bottom: 20px;
+      z-index: 200;
+      max-width: 340px;
+      padding: 13px 15px;
+      border: 1px solid var(--border-strong);
+      background: #161b24;
+      color: var(--text);
+      border-radius: 12px;
+      box-shadow: var(--shadow);
+      font-size: 13px;
+      transform: translateY(15px);
+      opacity: 0;
+      pointer-events: none;
+      transition: .25s ease;
+    }
+
+    #toast.show {
+      transform: translateY(0);
+      opacity: 1;
+    }
+
+    /* =========================
+       RESPONSIVE
+    ========================= */
+
+    @media (max-width: 1000px) {
+      .landing-grid,
+      .category-grid {
+        grid-template-columns: repeat(2, 1fr);
+      }
+
+      .workflow {
+        grid-template-columns: repeat(4, 1fr);
+      }
+
+      .dashboard-columns {
+        grid-template-columns: 1fr;
+      }
+
+      .projects-grid,
+      .plans-grid {
+        grid-template-columns: repeat(2, 1fr);
+      }
+    }
+
+    @media (max-width: 760px) {
+      .landing-nav {
+        padding: 0 15px;
+      }
+
+      .landing-nav-actions .btn:first-child {
+        display: none;
+      }
+
+      .hero {
+        padding: 55px 17px 50px;
+      }
+
+      .hero h1 {
+        letter-spacing: -2.5px;
+      }
+
+      .hero p {
+        font-size: 15px;
+      }
+
+      .landing-grid,
+      .landing-section {
+        padding-left: 15px;
+        padding-right: 15px;
+      }
+
+      .landing-grid {
+        grid-template-columns: 1fr;
+        margin-bottom: 65px;
+      }
+
+      .workflow {
+        grid-template-columns: repeat(2, 1fr);
+      }
+
+      .sidebar {
+        position: fixed;
+        left: -270px;
+        transition: .25s ease;
+        box-shadow: var(--shadow);
+      }
+
+      .sidebar.open {
+        left: 0;
+      }
+
+      .mobile-menu {
+        display: inline-grid;
+        place-items: center;
+      }
+
+      .topbar {
+        padding: 0 14px;
+      }
+
+      .content {
+        padding: 22px 14px;
+      }
+
+      .quick-input {
+        flex-direction: column;
+      }
+
+      .category-grid {
+        grid-template-columns: 1fr 1fr;
+      }
+
+      .tool-layout,
+      .settings-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .tool-menu {
+        display: flex;
+        overflow-x: auto;
+        gap: 5px;
+      }
+
+      .tool-menu button {
+        min-width: max-content;
+      }
+
+      .campaign-form {
+        grid-template-columns: 1fr;
+      }
+
+      .campaign-form .full {
+        grid-column: auto;
+      }
+
+      .projects-grid,
+      .plans-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    @media (max-width: 450px) {
+      .category-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .topbar-title {
+        display: none;
+      }
+
+      .plan-pill {
+        display: none;
+      }
+
+      .hero h1 {
+        font-size: 43px;
+      }
+    }
+  </style>
+</head>
+
+<body>
+
+  <!-- =========================
+       LANDING PAGE
+  ========================= -->
+
+  <section id="landing">
+
+    <nav class="landing-nav">
+      <a href="#" class="brand">
+        <span class="brand-mark">SQ</span>
+        <span class="brand-name">SQ AI</span>
+      </a>
+
+      <div class="landing-nav-actions">
+        <button class="btn btn-ghost" onclick="openAuth('login')">
+          Log in
+        </button>
+        <button class="btn btn-primary" onclick="openAuth('signup')">
+          Get started
+        </button>
+      </div>
+    </nav>
+
+    <div class="hero">
+      <div class="hero-badge">
+        ✦ AI Creation Studio
+      </div>
+
+      <h1>
+        Create smarter.<br />
+        <span>Grow faster.</span>
+      </h1>
+
+      <p>
+        SQ AI brings content, images, videos and advertising strategy
+        into one simple AI workspace.
+      </p>
+
+      <div class="hero-actions">
+        <button class="btn btn-primary" onclick="openAuth('signup')">
+          Start creating free
+        </button>
+
+        <button class="btn" onclick="scrollToFeatures()">
+          Explore tools
+        </button>
+      </div>
+    </div>
+
+    <div id="features" class="landing-grid">
+
+      <div class="landing-card">
+        <div class="landing-card-icon">🎬</div>
+        <h3>Video</h3>
+        <p>
+          Scripts, ad videos, short-form ideas,
+          product videos and video workflows.
+        </p>
+      </div>
+
+      <div class="landing-card">
+        <div class="landing-card-icon">✦</div>
+        <h3>Image</h3>
+        <p>
+          Product creatives, thumbnails,
+          ad concepts and visual variations.
+        </p>
+      </div>
+
+      <div class="landing-card">
+        <div class="landing-card-icon">✍️</div>
+        <h3>Content</h3>
+        <p>
+          Copywriting, hooks, captions,
+          scripts, CTAs and content planning.
+        </p>
+      </div>
+
+      <div class="landing-card">
+        <div class="landing-card-icon">📈</div>
+        <h3>Ads</h3>
+        <p>
+          Build campaigns from audience and strategy
+          to creative and campaign plan.
+        </p>
+      </div>
+
+    </div>
+
+    <section class="landing-section">
+
+      <div class="section-title">
+        <h2>From idea to campaign</h2>
+        <p>
+          A complete workflow instead of isolated AI tools.
+        </p>
+      </div>
+
+      <div class="workflow">
+        <div class="workflow-step">
+          <strong>01</strong>
+          Product
+        </div>
+
+        <div class="workflow-step">
+          <strong>02</strong>
+          Audience
+        </div>
+
+        <div class="workflow-step">
+          <strong>03</strong>
+          Strategy
+        </div>
+
+        <div class="workflow-step">
+          <strong>04</strong>
+          Hooks
+        </div>
+
+        <div class="workflow-step">
+          <strong>05</strong>
+          Copy
+        </div>
+
+        <div class="workflow-step">
+          <strong>06</strong>
+          Creative
+        </div>
+
+        <div class="workflow-step">
+          <strong>07</strong>
+          Campaign
+        </div>
+      </div>
+
+    </section>
+
+    <footer class="landing-footer">
+      © 2026 SQ AI. All rights reserved.
+    </footer>
+
+  </section>
+
+
+  <!-- =========================
+       AUTH MODAL
+  ========================= -->
+
+  <div id="authModal" class="modal-backdrop hidden">
+
+    <div class="auth-modal">
+
+      <div class="auth-head">
+        <div>
+          <h2 id="authTitle">Welcome back</h2>
+          <p id="authSubtitle">
+            Sign in to continue creating.
+          </p>
+        </div>
+
+        <button class="icon-btn" onclick="closeAuth()">×</button>
+      </div>
+
+      <div class="auth-tabs">
+        <button
+          id="loginTab"
+          class="auth-tab active"
+          onclick="switchAuth('login')">
+          Log in
+        </button>
+
+        <button
+          id="signupTab"
+          class="auth-tab"
+          onclick="switchAuth('signup')">
+          Sign up
+        </button>
+      </div>
+
+      <form id="authForm" class="auth-form">
+
+        <div id="nameField" class="field hidden">
+          <label>Full name</label>
+          <input
+            id="authName"
+            type="text"
+            autocomplete="name"
+            placeholder="Your name" />
+        </div>
+
+        <div class="field">
+          <label>Email</label>
+          <input
+            id="authEmail"
+            type="email"
+            autocomplete="email"
+            placeholder="you@example.com"
+            required />
+        </div>
+
+        <div class="field">
+          <label>Password</label>
+          <input
+            id="authPassword"
+            type="password"
+            autocomplete="current-password"
+            placeholder="••••••••"
+            minlength="6"
+            required />
+        </div>
+
+        <button
+          id="authSubmit"
+          class="btn btn-primary auth-submit"
+          type="submit">
+          Log in
+        </button>
+
+        <div id="authError" class="auth-error"></div>
+
+      </form>
+
+    </div>
+  </div>
+
+
+  <!-- =========================
+       APP
+  ========================= -->
+
+  <section id="app" class="hidden">
+
+    <aside id="sidebar" class="sidebar">
+
+      <div class="sidebar-brand">
+        <a href="#" class="brand">
+          <span class="brand-mark">SQ</span>
+          <span class="brand-name">SQ AI</span>
+        </a>
+      </div>
+
+      <div class="nav-group">
+
+        <div class="nav-label">Workspace</div>
+
+        <button
+          class="nav-item active"
+          data-page="dashboard"
+          onclick="showPage('dashboard')">
+          <span class="nav-icon">⌂</span>
+          Dashboard
+        </button>
+
+        <button
+          class="nav-item"
+          data-page="video"
+          onclick="showPage('video')">
+          <span class="nav-icon">🎬</span>
+          Video
+        </button>
+
+        <button
+          class="nav-item"
+          data-page="image"
+          onclick="showPage('image')">
+          <span class="nav-icon">✦</span>
+          Image
+        </button>
+
+        <button
+          class="nav-item"
+          data-page="content"
+          onclick="showPage('content')">
+          <span class="nav-icon">✍</span>
+          Content
+        </button>
+
+        <button
+          class="nav-item"
+          data-page="ads"
+          onclick="showPage('ads')">
+          <span class="nav-icon">📈</span>
+          Ads
+        </button>
+
+        <button
+          class="nav-item"
+          data-page="campaign"
+          onclick="showPage('campaign')">
+          <span class="nav-icon">🚀</span>
+          Campaign Studio
+        </button>
+
+      </div>
+
+      <div class="nav-group">
+
+        <div class="nav-label">Library</div>
+
+        <button
+          class="nav-item"
+          data-page="projects"
+          onclick="showPage('projects')">
+          <span class="nav-icon">▣</span>
+          Projects
+        </button>
+
+        <button
+          class="nav-item"
+          data-page="plans"
+          onclick="showPage('plans')">
+          <span class="nav-icon">◇</span>
+          Plans
+        </button>
+
+        <button
+          class="nav-item"
+          data-page="settings"
+          onclick="showPage('settings')">
+          <span class="nav-icon">⚙</span>
+          Settings
+        </button>
+
+      </div>
+
+      <div class="sidebar-bottom">
+
+        <div class="credit-box">
+          <div class="credit-row">
+            <span>Credits</span>
+            <span id="sidebarCredits" class="credit-number">—</span>
+          </div>
+
+          <div class="credit-bar">
+            <span id="creditBar"></span>
+          </div>
+        </div>
+
+        <div class="sidebar-user">
+
+          <div id="sidebarAvatar" class="avatar">
+            SQ
+          </div>
+
+          <div class="sidebar-user-info">
+            <strong id="sidebarUserName">User</strong>
+            <span id="sidebarUserEmail">—</span>
+          </div>
+
+          <button
+            class="icon-btn"
+            title="Log out"
+            onclick="logout()">
+            ↪
+          </button>
+
+        </div>
+
+      </div>
+
+    </aside>
+
+
+    <main class="main">
+
+      <header class="topbar">
+
+        <div style="display:flex;align-items:center;gap:10px;">
+
+          <button
+            class="icon-btn mobile-menu"
+            onclick="toggleSidebar()">
+            ☰
+          </button>
+
+          <span id="topbarTitle" class="topbar-title">
+            Dashboard
+          </span>
+
+        </div>
+
+        <div class="topbar-actions">
+          <span id="topbarPlan" class="plan-pill">
+            Free
+          </span>
+
+          <button
+            class="btn"
+            style="min-height:34px;padding:0 10px;font-size:11px;"
+            onclick="showPage('plans')">
+            Upgrade
+          </button>
+        </div>
+
+      </header>
+
+
+      <div class="content">
+
+
+        <!-- =========================
+             DASHBOARD
+        ========================= -->
+
+        <div id="page-dashboard" class="page">
+
+          <div class="welcome">
+            <h1 id="welcomeTitle">
+              What do you want to create today?
+            </h1>
+
+            <p>
+              Turn an idea into content, creative or a complete campaign.
+            </p>
+          </div>
+
+          <div class="create-box">
+
+            <h2>Start with an idea</h2>
+
+            <div class="quick-input">
+
+              <input
+                id="quickPrompt"
+                type="text"
+                placeholder="Example: Create a Facebook ad for my new product..." />
+
+              <button
+                class="btn btn-primary"
+                onclick="quickCreate()">
+                Create
+              </button>
+
+            </div>
+
+          </div>
+
+
+          <div class="category-grid">
+
+            <div class="category-card" onclick="showPage('video')">
+              <div class="icon">🎬</div>
+              <h3>Video</h3>
+              <p>
+                Scripts, shorts, product videos and ad videos.
+              </p>
+            </div>
+
+            <div class="category-card" onclick="showPage('image')">
+              <div class="icon">✦</div>
+              <h3>Image</h3>
+              <p>
+                Product images, thumbnails and ad creatives.
+              </p>
+            </div>
+
+            <div class="category-card" onclick="showPage('content')">
+              <div class="icon">✍️</div>
+              <h3>Content</h3>
+              <p>
+                Copy, hooks, captions, scripts and CTAs.
+              </p>
+            </div>
+
+            <div class="category-card" onclick="showPage('ads')">
+              <div class="icon">📈</div>
+              <h3>Ads</h3>
+              <p>
+                Campaigns, audiences, strategies and creatives.
+              </p>
+            </div>
+
+          </div>
+
+
+          <div class="dashboard-columns">
+
+            <div class="panel">
+
+              <div class="panel-head">
+                <h3>Recent projects</h3>
+
+                <button
+                  class="btn"
+                  style="min-height:32px;padding:0 10px;font-size:11px;"
+                  onclick="showPage('projects')">
+                  View all
+                </button>
+              </div>
+
+              <div id="recentProjects" class="project-list">
+                <div class="empty-state">
+                  Loading projects...
+                </div>
+              </div>
+
+            </div>
+
+
+            <div class="panel">
+
+              <div class="panel-head">
+                <h3>Usage</h3>
+              </div>
+
+              <div class="panel-body">
+
+                <div class="stats">
+
+                  <div class="stat">
+                    <span>Available credits</span>
+                    <strong id="dashboardCredits">—</strong>
+                  </div>
+
+                  <div class="stat">
+                    <span>Current plan</span>
+                    <strong id="dashboardPlan">Free</strong>
+                  </div>
+
+                  <div class="stat">
+                    <span>Projects</span>
+                    <strong id="dashboardProjects">—</strong>
+                  </div>
+
+                </div>
+
+              </div>
+
+            </div>
+
+          </div>
+
+        </div>
+
+
+        <!-- =========================
+             VIDEO
+        ========================= -->
+
+        <div id="page-video" class="page hidden">
+
+          <div class="page-head">
+            <h1>Video</h1>
+            <p>
+              Build video ideas, scripts and short-form content.
+            </p>
+          </div>
+
+          <div class="tool-layout">
+
+            <div class="tool-menu" id="videoTools"></div>
+
+            <div class="tool-workspace">
+              <div id="videoWorkspace"></div>
+            </div>
+
+          </div>
+
+        </div>
+
+
+        <!-- =========================
+             IMAGE
+        ========================= -->
+
+        <div id="page-image" class="page hidden">
+
+          <div class="page-head">
+            <h1>Image</h1>
+            <p>
+              Generate creative concepts and image prompts.
+            </p>
+          </div>
+
+          <div class="tool-layout">
+
+            <div class="tool-menu" id="imageTools"></div>
+
+            <div class="tool-workspace">
+              <div id="imageWorkspace"></div>
+            </div>
+
+          </div>
+
+        </div>
+
+
+        <!-- =========================
+             CONTENT
+        ========================= -->
+
+        <div id="page-content" class="page hidden">
+
+          <div class="page-head">
+            <h1>Content</h1>
+            <p>
+              Write copy, hooks, captions, scripts and marketing content.
+            </p>
+          </div>
+
+          <div class="tool-layout">
+
+            <div class="tool-menu" id="contentTools"></div>
+
+            <div class="tool-workspace">
+              <div id="contentWorkspace"></div>
+            </div>
+
+          </div>
+
+        </div>
+
+
+        <!-- =========================
+             ADS
+        ========================= -->
+
+        <div id="page-ads" class="page hidden">
+
+          <div class="page-head">
+            <h1>Ads</h1>
+            <p>
+              Create advertising concepts for your products and offers.
+            </p>
+          </div>
+
+          <div class="tool-layout">
+
+            <div class="tool-menu" id="adsTools"></div>
+
+            <div class="tool-workspace">
+              <div id="adsWorkspace"></div>
+            </div>
+
+          </div>
+
+        </div>
+
+
+        <!-- =========================
+             CAMPAIGN STUDIO
+        ========================= -->
+
+        <div id="page-campaign" class="page hidden">
+
+          <div class="page-head">
+            <h1>Campaign Studio</h1>
+            <p>
+              Build a campaign from product to complete marketing plan.
+            </p>
+          </div>
+
+          <div class="campaign-steps">
+
+            <div class="campaign-step active">
+              <strong>1</strong><br />
+              Product
+            </div>
+
+            <div class="campaign-step">
+              <strong>2</strong><br />
+              Audience
+            </div>
+
+            <div class="campaign-step">
+              <strong>3</strong><br />
+              Strategy
+            </div>
+
+            <div class="campaign-step">
+              <strong>4</strong><br />
+              Hooks
+            </div>
+
+            <div class="campaign-step">
+              <strong>5</strong><br />
+              Copy
+            </div>
+
+            <div class="campaign-step">
+              <strong>6</strong><br />
+              Creative
+            </div>
+
+            <div class="campaign-step">
+              <strong>7</strong><br />
+              Video Script
+            </div>
+
+            <div class="campaign-step">
+              <strong>8</strong><br />
+              CTA
+            </div>
+
+          </div>
+
+          <div class="workspace-card">
+
+            <div class="workspace-title">
+              <h2>Build your campaign</h2>
+              <p>
+                Tell SQ AI about the product, audience and goal.
+              </p>
+            </div>
+
+            <div class="campaign-form">
+
+              <div class="field">
+                <label>Product / service</label>
+                <input
+                  id="campaignProduct"
+                  placeholder="Example: Oversized sweatshirt" />
+              </div>
+
+              <div class="field">
+                <label>Target audience</label>
+                <input
+                  id="campaignAudience"
+                  placeholder="Example: Men 18–35 in Cairo" />
+              </div>
+
+              <div class="field">
+                <label>Campaign goal</label>
+                <select id="campaignGoal">
+                  <option value="sales">Sales</option>
+                  <option value="leads">Leads</option>
+                  <option value="awareness">Awareness</option>
+                  <option value="traffic">Traffic</option>
+                  <option value="engagement">Engagement</option>
+                </select>
+              </div>
+
+              <div class="field">
+                <label>Platform</label>
+                <select id="campaignPlatform">
+                  <option>Facebook</option>
+                  <option>Instagram</option>
+                  <option>TikTok</option>
+                  <option>YouTube</option>
+                  <option>Google Ads</option>
+                  <option>Multi-platform</option>
+                </select>
+              </div>
+
+              <div class="field full">
+                <label>Additional information</label>
+                <textarea
+                  id="campaignInput"
+                  placeholder="Describe your offer, price, benefits, competitors, tone or anything else that matters..."></textarea>
+              </div>
+
+            </div>
+
+            <button
+              id="campaignGenerateButton"
+              class="btn btn-primary"
+              onclick="generateCampaign()">
+              Generate campaign
+            </button>
+
+            <div id="campaignResult" class="campaign-result hidden"></div>
+
+          </div>
+
+        </div>
+
+
+        <!-- =========================
+             PROJECTS
+        ========================= -->
+
+        <div id="page-projects" class="page hidden">
+
+          <div class="page-head">
+            <h1>Projects</h1>
+            <p>
+              Everything you create in one place.
+            </p>
+          </div>
+
+          <div id="projectsGrid" class="projects-grid">
+            <div class="empty-state">
+              Loading projects...
+            </div>
+          </div>
+
+        </div>
+
+
+        <!-- =========================
+             PLANS
+        ========================= -->
+
+        <div id="page-plans" class="page hidden">
+
+          <div class="page-head">
+            <h1>Plans</h1>
+            <p>
+              Choose the plan that fits your workflow.
+            </p>
+          </div>
+
+          <div class="plans-grid">
+
+            <div class="plan-card">
+
+              <h3>Free</h3>
+
+              <div class="plan-price">
+                $0
+                <span>/month</span>
+              </div>
+
+              <p>
+                Explore SQ AI and start creating.
+              </p>
+
+              <ul class="plan-features">
+                <li>Starter credits</li>
+                <li>Core AI tools</li>
+                <li>Projects & history</li>
+                <li>Basic campaign workflow</li>
+              </ul>
+
+              <button class="btn">
+                Current plan
+              </button>
+
+            </div>
+
+
+            <div class="plan-card featured">
+
+              <div class="plan-badge">
+                POPULAR
+              </div>
+
+              <h3>Starter</h3>
+
+              <div class="plan-price">
+                $19
+                <span>/month</span>
+              </div>
+
+              <p>
+                For creators and small businesses.
+              </p>
+
+              <ul class="plan-features">
+                <li>More AI credits</li>
+                <li>All creation tools</li>
+                <li>Campaign Studio</li>
+                <li>Priority generation</li>
+              </ul>
+
+              <button
+                class="btn btn-primary"
+                onclick="startCheckout('starter')">
+                Upgrade
+              </button>
+
+            </div>
+
+
+            <div class="plan-card">
+
+              <h3>Pro</h3>
+
+              <div class="plan-price">
+                $49
+                <span>/month</span>
+              </div>
+
+              <p>
+                For serious creators and growing teams.
+              </p>
+
+              <ul class="plan-features">
+                <li>High credit allowance</li>
+                <li>Advanced workflows</li>
+                <li>Campaign generation</li>
+                <li>Priority access</li>
+              </ul>
+
+              <button
+                class="btn"
+                onclick="startCheckout('pro')">
+                Upgrade
+              </button>
+
+            </div>
+
+
+            <div class="plan-card">
+
+              <h3>Business</h3>
+
+              <div class="plan-price">
+                $149
+                <span>/month</span>
+              </div>
+
+              <p>
+                For agencies and high-volume workflows.
+              </p>
+
+              <ul class="plan-features">
+                <li>Large credit allowance</li>
+                <li>Advanced campaign workflows</li>
+                <li>High-volume generation</li>
+                <li>Business-ready tools</li>
+              </ul>
+
+              <button
+                class="btn"
+                onclick="startCheckout('business')">
+                Upgrade
+              </button>
+
+            </div>
+
+          </div>
+
+        </div>
+
+
+        <!-- =========================
+             SETTINGS
+        ========================= -->
+
+        <div id="page-settings" class="page hidden">
+
+          <div class="page-head">
+            <h1>Settings</h1>
+            <p>
+              Manage your account and preferences.
+            </p>
+          </div>
+
+          <div class="settings-grid">
+
+            <div class="settings-menu">
+
+              <button
+                class="active"
+                onclick="showSettingsTab('account', this)">
+                Account
+              </button>
+
+              <button
+                onclick="showSettingsTab('security', this)">
+                Security
+              </button>
+
+              <button
+                onclick="showSettingsTab('preferences', this)">
+                Preferences
+              </button>
+
+            </div>
+
+
+            <div class="settings-panel">
+
+              <div id="settings-account">
+
+                <h2>Account</h2>
+                <p>
+                  Your SQ AI account information.
+                </p>
+
+                <div class="field">
+                  <label>Name</label>
+                  <input id="settingsName" />
+                </div>
+
+                <div class="field">
+                  <label>Email</label>
+                  <input id="settingsEmail" disabled />
+                </div>
+
+                <div class="settings-actions">
+                  <button
+                    class="btn btn-primary"
+                    onclick="saveAccount()">
+                    Save changes
+                  </button>
+                </div>
+
+              </div>
+
+
+              <div id="settings-security" class="hidden">
+
+                <h2>Security</h2>
+                <p>
+                  Manage your account session.
+                </p>
+
+                <button
+                  class="btn btn-danger"
+                  onclick="logout()">
+                  Log out
+                </button>
+
+              </div>
+
+
+              <div id="settings-preferences" class="hidden">
+
+                <h2>Preferences</h2>
+                <p>
+                  Personalize your SQ AI experience.
+                </p>
+
+                <div class="field">
+                  <label>Interface language</label>
+
+                  <select>
+                    <option>English</option>
+                    <option>Arabic</option>
+                  </select>
+                </div>
+
+                <div class="field">
+                  <label>Default output style</label>
+
+                  <select>
+                    <option>Professional</option>
+                    <option>Creative</option>
+                    <option>Direct</option>
+                    <option>Persuasive</option>
+                  </select>
+                </div>
+
+                <div class="settings-actions">
+                  <button
+                    class="btn btn-primary"
+                    onclick="showToast('Preferences saved')">
+                    Save preferences
+                  </button>
+                </div>
+
+              </div>
+
+            </div>
+
+          </div>
+
+        </div>
+
+      </div>
+
+    </main>
+
+  </section>
+
+
+  <div id="toast"></div>
+
+
+  <!-- =========================
+       JAVASCRIPT
+  ========================= -->
+
+  <script>
+
+    /* =========================
+       API
+    ========================= */
+
+    const API = {
+
+      async request(url, options = {}) {
+
+        const config = {
+          credentials: "include",
+          headers: {
+            "Content-Type": "application/json",
+            ...(options.headers || {})
+          },
+          ...options
+        };
+
+        const response = await fetch(url, config);
+
+        let data = {};
+
+        try {
+          data = await response.json();
+        } catch {
+          data = {};
+        }
+
+        if (!response.ok) {
+          const message =
+            data.error ||
+            data.message ||
+            `Request failed (${response.status})`;
+
+          throw new Error(message);
+        }
+
+        return data;
+      },
+
+      me() {
+        return this.request("/api/me");
+      },
+
+      login(email, password) {
+        return this.request("/api/auth/login", {
+          method: "POST",
+          body: JSON.stringify({
+            email,
+            password
+          })
+        });
+      },
+
+      signup(name, email, password) {
+        return this.request("/api/auth/signup", {
+          method: "POST",
+          body: JSON.stringify({
+            name,
+            email,
+            password
+          })
+        });
+      },
+
+      logout() {
+        return this.request("/api/auth/logout", {
+          method: "POST"
+        });
+      },
+
+      usage() {
+        return this.request("/api/usage");
+      },
+
+      projects() {
+        return this.request("/api/projects");
+      },
+
+      generateTool(payload) {
+        return this.request("/api/tools/generate", {
+          method: "POST",
+          body: JSON.stringify(payload)
+        });
+      },
+
+      generateCampaign(payload) {
+        return this.request("/api/campaigns/generate", {
+          method: "POST",
+          body: JSON.stringify(payload)
+        });
+      },
+
+      saveProject(payload) {
+        return this.request("/api/projects", {
+          method: "POST",
+          body: JSON.stringify(payload)
+        });
+      },
+
+      deleteProject(id) {
+        return this.request(`/api/projects/${id}`, {
+          method: "DELETE"
+        });
+      },
+
+      checkout(plan) {
+        return this.request("/api/billing/checkout", {
+          method: "POST",
+          body: JSON.stringify({
+            plan
+          })
+        });
+      }
+
+    };
+
+
+    /* =========================
+       STATE
+    ========================= */
+
+    const state = {
+
+      user: null,
+
+      usage: {
+        credits: 0,
+        plan: "Free"
+      },
+
+      projects: [],
+
+      authMode: "login",
+
+      currentPage: "dashboard",
+
+      currentTools: {},
+
+      currentTool: null
+
+    };
+
+
+    /* =========================
+       TOOL DEFINITIONS
+    ========================= */
+
+    const TOOL_GROUPS = {
+
+      video: [
+
+        {
+          id: "video_script",
+          name: "AI Video Script",
+          description: "Create a complete video script from an idea.",
+          placeholder: "Describe your video idea..."
+        },
+
+        {
+          id: "ad_video",
+          name: "Ad Video",
+          description: "Build a persuasive advertising video concept.",
+          placeholder: "Describe your product and offer..."
+        },
+
+        {
+          id: "product_video",
+          name: "Product Video",
+          description: "Create a product-focused video concept.",
+          placeholder: "Describe the product..."
+        },
+
+        {
+          id: "shorts",
+          name: "Reels / Shorts",
+          description: "Generate short-form video ideas.",
+          placeholder: "What should the short video be about?"
+        },
+
+        {
+          id: "long_to_shorts",
+          name: "Long Video → Shorts",
+          description: "Create short-form clip concepts from long content.",
+          placeholder: "Paste the long video summary or transcript..."
+        },
+
+        {
+          id: "hooks",
+          name: "Video Hooks",
+          description: "Generate attention-grabbing hooks.",
+          placeholder: "Describe the video topic..."
+        },
+
+        {
+          id: "voiceover",
+          name: "Voice-over",
+          description: "Prepare a voice-over script.",
+          placeholder: "Paste or describe the content..."
+        },
+
+        {
+          id: "subtitles",
+          name: "Subtitles",
+          description: "Prepare subtitle-ready text.",
+          placeholder: "Paste your video dialogue..."
+        }
+
+      ],
+
+      image: [
+
+        {
+          id: "image_prompt",
+          name: "Text → Image",
+          description: "Create a detailed image-generation prompt.",
+          placeholder: "Describe the image you want..."
+        },
+
+        {
+          id: "product_image",
+          name: "Product Image",
+          description: "Create professional product visual concepts.",
+          placeholder: "Describe your product..."
+        },
+
+        {
+          id: "ad_creative",
+          name: "Ad Creative",
+          description: "Create an advertising visual concept.",
+          placeholder: "Describe the product and campaign..."
+        },
+
+        {
+          id: "thumbnail",
+          name: "Thumbnail",
+          description: "Create a strong thumbnail concept.",
+          placeholder: "Describe the video/topic..."
+        },
+
+        {
+          id: "background",
+          name: "Background",
+          description: "Create background replacement concepts.",
+          placeholder: "Describe the desired background..."
+        },
+
+        {
+          id: "variations",
+          name: "Creative Variations",
+          description: "Generate different creative directions.",
+          placeholder: "Describe the original creative..."
+        }
+
+      ],
+
+      content: [
+
+        {
+          id: "writer",
+          name: "AI Writer",
+          description: "Write clear and engaging content.",
+          placeholder: "Tell me what you need written..."
+        },
+
+        {
+          id: "ad_copy",
+          name: "Ad Copy",
+          description: "Write persuasive advertising copy.",
+          placeholder: "Describe your product and offer..."
+        },
+
+        {
+          id: "content_hooks",
+          name: "Hooks",
+          description: "Generate high-impact hooks.",
+          placeholder: "What is your content about?"
+        },
+
+        {
+          id: "captions",
+          name: "Captions",
+          description: "Generate social media captions.",
+          placeholder: "Describe the post..."
+        },
+
+        {
+          id: "script",
+          name: "Scripts",
+          description: "Create scripts for videos and social content.",
+          placeholder: "Describe the video..."
+        },
+
+        {
+          id: "product_description",
+          name: "Product Description",
+          description: "Write product descriptions.",
+          placeholder: "Describe your product..."
+        },
+
+        {
+          id: "cta",
+          name: "CTA",
+          description: "Generate calls to action.",
+          placeholder: "Describe the offer..."
+        },
+
+        {
+          id: "rewrite",
+          name: "Rewrite",
+          description: "Rewrite content in a better style.",
+          placeholder: "Paste the content..."
+        },
+
+        {
+          id: "summarize",
+          name: "Summarize",
+          description: "Summarize long content.",
+          placeholder: "Paste the content..."
+        },
+
+        {
+          id: "translate",
+          name: "Translate",
+          description: "Translate content naturally.",
+          placeholder: "Paste the content and target language..."
+        },
+
+        {
+          id: "content_calendar",
+          name: "Content Calendar",
+          description: "Build a practical content calendar.",
+          placeholder: "Describe your business and audience..."
+        },
+
+        {
+          id: "persona",
+          name: "Customer Persona",
+          description: "Build customer personas.",
+          placeholder: "Describe your product or business..."
+        },
+
+        {
+          id: "audience_analysis",
+          name: "Audience Analysis",
+          description: "Analyze your target audience.",
+          placeholder: "Describe your product and market..."
+        }
+
+      ],
+
+      ads: [
+
+        {
+          id: "campaign_generator",
+          name: "Campaign Generator",
+          description: "Generate a complete advertising campaign.",
+          placeholder: "Describe your product, audience and goal..."
+        },
+
+        {
+          id: "audience",
+          name: "Audience",
+          description: "Define a target audience.",
+          placeholder: "Describe your product..."
+        },
+
+        {
+          id: "strategy",
+          name: "Strategy",
+          description: "Create an advertising strategy.",
+          placeholder: "Describe your business and goal..."
+        },
+
+        {
+          id: "ad_hooks",
+          name: "Ad Hooks",
+          description: "Generate advertising hooks.",
+          placeholder: "Describe the product and audience..."
+        },
+
+        {
+          id: "ad_copy_ads",
+          name: "Ad Copy",
+          description: "Create multiple ad copy variations.",
+          placeholder: "Describe your offer..."
+        },
+
+        {
+          id: "creative_concepts",
+          name: "Creative Concepts",
+          description: "Create advertising creative concepts.",
+          placeholder: "Describe your product..."
+        },
+
+        {
+          id: "video_script_ads",
+          name: "Video Script",
+          description: "Create a script for an advertising video.",
+          placeholder: "Describe your product and offer..."
+        },
+
+        {
+          id: "campaign_cta",
+          name: "CTA",
+          description: "Generate campaign CTAs.",
+          placeholder: "Describe your offer..."
+        },
+
+        {
+          id: "campaign_plan",
+          name: "Campaign Plan",
+          description: "Create a complete campaign plan.",
+          placeholder: "Describe your business, product and goal..."
+        },
+
+        {
+          id: "competitor_analysis",
+          name: "Competitor Analysis",
+          description: "Create a competitor analysis framework.",
+          placeholder: "Describe your market and competitors..."
+        },
+
+        {
+          id: "budget_roas",
+          name: "Budget / ROAS",
+          description: "Plan budget and performance targets.",
+          placeholder: "Describe your budget, price and campaign goal..."
+        }
+
+      ]
+
+    };
+
+
+    /* =========================
+       INIT
+    ========================= */
+
+    document.addEventListener("DOMContentLoaded", async () => {
+
+      setupToolMenus();
+
+      document
+        .getElementById("authForm")
+        .addEventListener("submit", handleAuth);
+
+      await boot();
+
+    });
+
+
+    async function boot() {
+
+      try {
+
+        const data = await API.me();
+
+        if (data && data.user) {
+
+          state.user = data.user;
+
+          enterApp();
+
+        } else {
+
+          showLanding();
+
+        }
+
+      } catch {
+
+        showLanding();
+
+      }
+
+    }
+
+
+    /* =========================
+       AUTH
+    ========================= */
+
+    function openAuth(mode = "login") {
+
+      switchAuth(mode);
+
+      document
+        .getElementById("authModal")
+        .classList.remove("hidden");
+
+    }
+
+
+    function closeAuth() {
+
+      document
+        .getElementById("authModal")
+        .classList.add("hidden");
+
+      document
+        .getElementById("authError")
+        .textContent = "";
+
+    }
+
+
+    function switchAuth(mode) {
+
+      state.authMode = mode;
+
+      const login =
+        mode === "login";
+
+      document
+        .getElementById("loginTab")
+        .classList.toggle("active", login);
+
+      document
+        .getElementById("signupTab")
+        .classList.toggle("active", !login);
+
+      document
+        .getElementById("nameField")
+        .classList.toggle("hidden", login);
+
+      document
+        .getElementById("authTitle")
+        .textContent =
+          login
+            ? "Welcome back"
+            : "Create your account";
+
+      document
+        .getElementById("authSubtitle")
+        .textContent =
+          login
+            ? "Sign in to continue creating."
+            : "Start creating with SQ AI.";
+
+      document
+        .getElementById("authSubmit")
+        .textContent =
+          login
+            ? "Log in"
+            : "Create account";
+
+      document
+        .getElementById("authError")
+        .textContent = "";
+
+    }
+
+
+    async function handleAuth(event) {
+
+      event.preventDefault();
+
+      const name =
+        document
+          .getElementById("authName")
+          .value
+          .trim();
+
+      const email =
+        document
+          .getElementById("authEmail")
+          .value
+          .trim();
+
+      const password =
+        document
+          .getElementById("authPassword")
+          .value;
+
+      const submit =
+        document
+          .getElementById("authSubmit");
+
+      const error =
+        document
+          .getElementById("authError");
+
+      error.textContent = "";
+
+      submit.classList.add("loading");
+
+      submit.textContent =
+        state.authMode === "login"
+          ? "Signing in..."
+          : "Creating...";
+
+      try {
+
+        let data;
+
+        if (state.authMode === "login") {
+
+          data =
+            await API.login(
+              email,
+              password
+            );
+
+        } else {
+
+          data =
+            await API.signup(
+              name,
+              email,
+              password
+            );
+
+        }
+
+        state.user =
+          data.user ||
+          data.account ||
+          data;
+
+        closeAuth();
+
+        enterApp();
+
+        showToast(
+          state.authMode === "login"
+            ? "Welcome back"
+            : "Account created successfully"
+        );
+
+      } catch (err) {
+
+        error.textContent =
+          err.message ||
+          "Something went wrong.";
+
+      } finally {
+
+        submit.classList.remove("loading");
+
+        submit.textContent =
+          state.authMode === "login"
+            ? "Log in"
+            : "Create account";
+
+      }
+
+    }
+
+
+    async function logout() {
+
+      try {
+        await API.logout();
+      } catch {}
+
+      state.user = null;
+      state.projects = [];
+
+      showLanding();
+
+      showToast("Logged out");
+
+    }
+
+
+    /* =========================
+       APP ENTRY
+    ========================= */
+
+    function enterApp() {
+
+      document
+        .getElementById("landing")
+        .classList.add("hidden");
+
+      document
+        .getElementById("app")
+        .classList.remove("hidden");
+
+      updateUserUI();
+
+      showPage("dashboard");
+
+      refreshData();
+
+    }
+
+
+    function showLanding() {
+
+      document
+        .getElementById("app")
+        .classList.add("hidden");
+
+      document
+        .getElementById("landing")
+        .classList.remove("hidden");
+
+    }
+
+
+    function updateUserUI() {
+
+      if (!state.user) return;
+
+      const name =
+        state.user.name ||
+        state.user.full_name ||
+        state.user.email ||
+        "User";
+
+      const email =
+        state.user.email ||
+        "—";
+
+      document
+        .getElementById("sidebarUserName")
+        .textContent = name;
+
+      document
+        .getElementById("sidebarUserEmail")
+        .textContent = email;
+
+      document
+        .getElementById("sidebarAvatar")
+        .textContent =
+          name
+            .split(/\s+/)
+            .slice(0, 2)
+            .map(x => x[0])
+            .join("")
+            .toUpperCase();
+
+      document
+        .getElementById("settingsName")
+        .value = name;
+
+      document
+        .getElementById("settingsEmail")
+        .value = email;
+
+    }
+
+
+    async function refreshData() {
+
+      try {
+
+        const [usage, projects] =
+          await Promise.all([
+            API.usage(),
+            API.projects()
+          ]);
+
+        state.usage =
+          normalizeUsage(usage);
+
+        state.projects =
+          normalizeProjects(projects);
+
+        updateUsageUI();
+
+        renderProjects();
+
+      } catch (err) {
+
+        console.error(err);
+
+      }
+
+    }
+
+
+    function normalizeUsage(data) {
+
+      const credits =
+        Number(
+          data?.credits ??
+          data?.remaining ??
+          data?.balance ??
+          data?.usage?.credits ??
+          0
+        );
+
+      const plan =
+        data?.plan ??
+        data?.current_plan ??
+        data?.subscription?.plan ??
+        state.user?.plan ??
+        "Free";
+
+      return {
+        credits,
+        plan
+      };
+
+    }
+
+
+    function normalizeProjects(data) {
+
+      if (Array.isArray(data)) {
+        return data;
+      }
+
+      if (Array.isArray(data?.projects)) {
+        return data.projects;
+      }
+
+      return [];
+
+    }
+
+
+    function updateUsageUI() {
+
+      const credits =
+        state.usage.credits ?? 0;
+
+      const plan =
+        state.usage.plan || "Free";
+
+      document
+        .getElementById("sidebarCredits")
+        .textContent =
+          formatNumber(credits);
+
+      document
+        .getElementById("dashboardCredits")
+        .textContent =
+          formatNumber(credits);
+
+      document
+        .getElementById("dashboardPlan")
+        .textContent =
+          plan;
+
+      document
+        .getElementById("topbarPlan")
+        .textContent =
+          plan;
+
+      document
+        .getElementById("dashboardProjects")
+        .textContent =
+          state.projects.length;
+
+      const percentage =
+        Math.min(
+          100,
+          Math.max(
+            4,
+            credits > 0
+              ? Math.min(100, credits / 10)
+              : 4
+          )
+        );
+
+      document
+        .getElementById("creditBar")
+        .style.width =
+          percentage + "%";
+
+    }
+
+
+    /* =========================
+       NAVIGATION
+    ========================= */
+
+    function showPage(page) {
+
+      document
+        .querySelectorAll(".page")
+        .forEach(element => {
+          element.classList.add("hidden");
+        });
+
+      const target =
+        document.getElementById(
+          `page-${page}`
+        );
+
+      if (!target) return;
+
+      target.classList.remove("hidden");
+
+      document
+        .querySelectorAll(".nav-item")
+        .forEach(item => {
+          item.classList.toggle(
+            "active",
+            item.dataset.page === page
+          );
+        });
+
+      state.currentPage = page;
+
+      const titles = {
+        dashboard: "Dashboard",
+        video: "Video",
+        image: "Image",
+        content: "Content",
+        ads: "Ads",
+        campaign: "Campaign Studio",
+        projects: "Projects",
+        plans: "Plans",
+        settings: "Settings"
+      };
+
+      document
+        .getElementById("topbarTitle")
+        .textContent =
+          titles[page] || "SQ AI";
+
+      closeMobileSidebar();
+
+      if (page === "projects") {
+        renderProjects();
+      }
+
+    }
+
+
+    function toggleSidebar() {
+
+      document
+        .getElementById("sidebar")
+        .classList.toggle("open");
+
+    }
+
+
+    function closeMobileSidebar() {
+
+      document
+        .getElementById("sidebar")
+        .classList.remove("open");
+
+    }
+
+
+    /* =========================
+       TOOLS
+    ========================= */
+
+    function setupToolMenus() {
+
+      Object.keys(TOOL_GROUPS)
+        .forEach(category => {
+
+          const container =
+            document.getElementById(
+              `${category}Tools`
+            );
+
+          if (!container) return;
+
+          container.innerHTML = "";
+
+          TOOL_GROUPS[category]
+            .forEach((tool, index) => {
+
+              const button =
+                document.createElement("button");
+
+              button.textContent =
+                tool.name;
+
+              button.onclick =
+                () => selectTool(
+                  category,
+                  tool.id
+                );
+
+              if (index === 0) {
+                button.classList.add("active");
+              }
+
+              container.appendChild(button);
+
+            });
+
+          selectTool(
+            category,
+            TOOL_GROUPS[category][0].id
+          );
+
+        });
+
+    }
+
+
+    function selectTool(category, toolId) {
+
+      const tool =
+        TOOL_GROUPS[category]
+          .find(item => item.id === toolId);
+
+      if (!tool) return;
+
+      state.currentTools[category] =
+        tool;
+
+      document
+        .querySelectorAll(
+          `#${category}Tools button`
+        )
+        .forEach(button => {
+
+          button.classList.toggle(
+            "active",
+            button.textContent === tool.name
+          );
+
+        });
+
+      renderToolWorkspace(
+        category,
+        tool
+      );
+
+    }
+
+
+    function renderToolWorkspace(
+      category,
+      tool
+    ) {
+
+      const workspace =
+        document.getElementById(
+          `${category}Workspace`
+        );
+
+      if (!workspace) return;
+
+      workspace.innerHTML = `
+
+        <div class="workspace-card">
+
+          <div class="workspace-title">
+
+            <h2>${escapeHtml(tool.name)}</h2>
+
+            <p>
+              ${escapeHtml(tool.description)}
+            </p>
+
+          </div>
+
+          <div class="field">
+
+            <label>
+              Your instructions
+            </label>
+
+            <textarea
+              id="${category}ToolInput"
+              placeholder="${escapeHtml(tool.placeholder)}"></textarea>
+
+          </div>
+
+          <div style="display:flex;gap:8px;flex-wrap:wrap;">
+
+            <button
+              class="btn btn-primary"
+              id="${category}GenerateButton"
+              onclick="generateTool('${category}','${tool.id}')">
+              Generate
+            </button>
+
+            <button
+              class="btn"
+              onclick="clearTool('${category}')">
+              Clear
+            </button>
+
+          </div>
+
+          <div
+            id="${category}Result"
+            class="result-box">
+            Your result will appear here.
+          </div>
+
+          <div
+            id="${category}ResultActions"
+            class="result-actions hidden">
+
+            <button
+              class="btn"
+              onclick="copyResult('${category}')">
+              Copy
+            </button>
+
+            <button
+              class="btn"
+              onclick="saveToolResult('${category}','${tool.id}')">
+              Save project
+            </button>
+
+          </div>
+
+        </div>
+
+      `;
+
+    }
+
+
+    async function generateTool(
+      category,
+      toolId
+    ) {
+
+      const input =
+        document
+          .getElementById(
+            `${category}ToolInput`
+          )
+          .value
+          .trim();
+
+      const result =
+        document
+          .getElementById(
+            `${category}Result`
+          );
+
+      const button =
+        document
+          .getElementById(
+            `${category}GenerateButton`
+          );
+
+      const actions =
+        document
+          .getElementById(
+            `${category}ResultActions`
+          );
+
+      if (!input) {
+
+        showToast(
+          "Write what you want to create first."
+        );
+
+        return;
+
+      }
+
+      button.classList.add("loading");
+      button.textContent = "Generating...";
+      actions.classList.add("hidden");
+
+      result.textContent =
+        "Creating your result...";
+
+      try {
+
+        const data =
+          await API.generateTool({
+            tool: toolId,
+            type: category,
+            input,
+            prompt: input
+          });
+
+        const output =
+          extractOutput(data);
+
+        result.textContent =
+          output ||
+          "The AI returned an empty result.";
+
+        actions.classList.remove("hidden");
+
+        await refreshData();
+
+      } catch (err) {
+
+        result.textContent =
+          `Error: ${err.message}`;
+
+      } finally {
+
+        button.classList.remove("loading");
+
+        button.textContent = "Generate";
+
+      }
+
+    }
+
+
+    function clearTool(category) {
+
+      const input =
+        document.getElementById(
+          `${category}ToolInput`
+        );
+
+      const result =
+        document.getElementById(
+          `${category}Result`
+        );
+
+      const actions =
+        document.getElementById(
+          `${category}ResultActions`
+        );
+
+      if (input) input.value = "";
+
+      if (result) {
+        result.textContent =
+          "Your result will appear here.";
+      }
+
+      if (actions) {
+        actions.classList.add("hidden");
+      }
+
+    }
+
+
+    function extractOutput(data) {
+
+      if (!data) return "";
+
+      if (typeof data === "string") {
+        return data;
+      }
+
+      return (
+        data.output ??
+        data.result ??
+        data.text ??
+        data.content ??
+        data.message ??
+        data.data?.output ??
+        data.data?.result ??
+        ""
+      );
+
+    }
+
+
+    function getCurrentToolResult(category) {
+
+      const element =
+        document.getElementById(
+          `${category}Result`
+        );
+
+      return element
+        ? element.textContent
+        : "";
+
+    }
+
+
+    async function saveToolResult(
+      category,
+      toolId
+    ) {
+
+      const result =
+        getCurrentToolResult(category);
+
+      if (
+        !result ||
+        result === "Your result will appear here."
+      ) {
+
+        showToast("Nothing to save.");
+
+        return;
+
+      }
+
+      const tool =
+        TOOL_GROUPS[category]
+          .find(item => item.id === toolId);
+
+      try {
+
+        await API.saveProject({
+          title:
+            tool?.name ||
+            "SQ AI Project",
+
+          type: category,
+
+          tool: toolId,
+
+          content: result,
+
+          output: result
+
+        });
+
+        showToast("Project saved.");
+
+        await refreshData();
+
+      } catch (err) {
+
+        showToast(
+          err.message ||
+          "Could not save project."
+        );
+
+      }
+
+    }
+
+
+    async function copyResult(category) {
+
+      const text =
+        getCurrentToolResult(category);
+
+      if (!text) return;
+
+      try {
+
+        await navigator.clipboard.writeText(text);
+
+        showToast("Copied to clipboard.");
+
+      } catch {
+
+        showToast(
+          "Copy is not available in this browser."
+        );
+
+      }
+
+    }
+
+
+    /* =========================
+       QUICK CREATE
+    ========================= */
+
+    function quickCreate() {
+
+      const input =
+        document
+          .getElementById("quickPrompt")
+          .value
+          .trim();
+
+      if (!input) {
+
+        showToast(
+          "Tell SQ AI what you want to create."
+        );
+
+        return;
+
+      }
+
+      const lower =
+        input.toLowerCase();
+
+      if (
+        lower.includes("video") ||
+        lower.includes("فيديو") ||
+        lower.includes("reel") ||
+        lower.includes("short")
+      ) {
+
+        showPage("video");
+
+        setTimeout(() => {
+
+          const field =
+            document.getElementById(
+              "videoToolInput"
+            );
+
+          if (field) {
+            field.value = input;
+          }
+
+        }, 50);
+
+        return;
+      }
+
+      if (
+        lower.includes("image") ||
+        lower.includes("صورة") ||
+        lower.includes("creative")
+      ) {
+
+        showPage("image");
+
+        setTimeout(() => {
+
+          const field =
+            document.getElementById(
+              "imageToolInput"
+            );
+
+          if (field) {
+            field.value = input;
+          }
+
+        }, 50);
+
+        return;
+      }
+
+      if (
+        lower.includes("ad") ||
+        lower.includes("advert") ||
+        lower.includes("إعلان") ||
+        lower.includes("حملة")
+      ) {
+
+        showPage("ads");
+
+        setTimeout(() => {
+
+          const field =
+            document.getElementById(
+              "adsToolInput"
+            );
+
+          if (field) {
+            field.value = input;
+          }
+
+        }, 50);
+
+        return;
+      }
+
+      showPage("content");
+
+      setTimeout(() => {
+
+        const field =
+          document.getElementById(
+            "contentToolInput"
+          );
+
+        if (field) {
+          field.value = input;
+        }
+
+      }, 50);
+
+    }
+
+
+    /* =========================
+       CAMPAIGN
+    ========================= */
+
+    async function generateCampaign() {
+
+      const product =
+        document
+          .getElementById("campaignProduct")
+          .value
+          .trim();
+
+      const audience =
+        document
+          .getElementById("campaignAudience")
+          .value
+          .trim();
+
+      const goal =
+        document
+          .getElementById("campaignGoal")
+          .value;
+
+      const platform =
+        document
+          .getElementById("campaignPlatform")
+          .value;
+
+      const input =
+        document
+          .getElementById("campaignInput")
+          .value
+          .trim();
+
+      const button =
+        document
+          .getElementById(
+            "campaignGenerateButton"
+          );
+
+      const result =
+        document
+          .getElementById("campaignResult");
+
+      if (!product) {
+
+        showToast(
+          "Add the product or service first."
+        );
+
+        return;
+
+      }
+
+      button.classList.add("loading");
+      button.textContent =
+        "Building campaign...";
+
+      result.classList.remove("hidden");
+
+      result.innerHTML = `
+        <div class="campaign-output">
+          <p>Building your campaign...</p>
+        </div>
+      `;
+
+      try {
+
+        const data =
+          await API.generateCampaign({
+            product,
+            audience,
+            goal,
+            platform,
+            input
+          });
+
+        const output =
+          data?.result ||
+          data?.output ||
+          data?.campaign ||
+          data?.data ||
+          data;
+
+        renderCampaignResult(output);
+
+        await refreshData();
+
+      } catch (err) {
+
+        result.innerHTML = `
+          <div class="campaign-output">
+            <h4>Error</h4>
+            <p>${escapeHtml(err.message)}</p>
+          </div>
+        `;
+
+      } finally {
+
+        button.classList.remove("loading");
+
+        button.textContent =
+          "Generate campaign";
+
+      }
+
+    }
+
+
+    function renderCampaignResult(data) {
+
+      const container =
+        document.getElementById(
+          "campaignResult"
+        );
+
+      if (!container) return;
+
+      if (typeof data === "string") {
+
+        container.innerHTML = `
+          <div class="campaign-output">
+            <h4>Campaign</h4>
+            <p>${escapeHtml(data)}</p>
+          </div>
+        `;
+
+        return;
+
+      }
+
+      if (!data || typeof data !== "object") {
+
+        container.innerHTML = `
+          <div class="campaign-output">
+            <h4>Campaign</h4>
+            <p>No campaign result returned.</p>
+          </div>
+        `;
+
+        return;
+
+      }
+
+      const labels = {
+        product: "Product",
+        audience: "Audience",
+        strategy: "Strategy",
+        hooks: "Hooks",
+        copy: "Copy",
+        creative: "Creative",
+        video_script: "Video Script",
+        cta: "CTA",
+        campaign_plan: "Campaign Plan"
+      };
+
+      const keys =
+        Object.keys(data);
+
+      container.innerHTML =
+        keys
+          .map(key => {
+
+            const value =
+              typeof data[key] === "object"
+                ? JSON.stringify(
+                    data[key],
+                    null,
+                    2
+                  )
+                : String(data[key]);
+
+            return `
+              <div class="campaign-output">
+                <h4>
+                  ${escapeHtml(
+                    labels[key] || key
+                  )}
+                </h4>
+
+                <p>
+                  ${escapeHtml(value)}
+                </p>
+              </div>
+            `;
+
+          })
+          .join("");
+
+    }
+
+
+    /* =========================
+       PROJECTS
+    ========================= */
+
+    function renderProjects() {
+
+      const recent =
+        document.getElementById(
+          "recentProjects"
+        );
+
+      const grid =
+        document.getElementById(
+          "projectsGrid"
+        );
+
+      if (recent) {
+
+        if (!state.projects.length) {
+
+          recent.innerHTML = `
+            <div class="empty-state">
+              No projects yet.
+            </div>
+          `;
+
+        } else {
+
+          recent.innerHTML =
+            state.projects
+              .slice(0, 6)
+              .map(projectItemHtml)
+              .join("");
+
+        }
+
+      }
+
+      if (grid) {
+
+        if (!state.projects.length) {
+
+          grid.innerHTML = `
+            <div
+              class="empty-state"
+              style="grid-column:1/-1;">
+              You haven't created any projects yet.
+            </div>
+          `;
+
+        } else {
+
+          grid.innerHTML =
+            state.projects
+              .map(projectCardHtml)
+              .join("");
+
+        }
+
+      }
+
+    }
+
+
+    function projectItemHtml(project) {
+
+      const title =
+        project.title ||
+        project.name ||
+        "Untitled project";
+
+      const type =
+        project.type ||
+        project.tool ||
+        "Project";
+
+      return `
+
+        <div class="project-item">
+
+          <div class="project-icon">
+            ${projectIcon(type)}
+          </div>
+
+          <div class="project-main">
+
+            <strong>
+              ${escapeHtml(title)}
+            </strong>
+
+            <span>
+              ${escapeHtml(type)}
+            </span>
+
+          </div>
+
+        </div>
+
+      `;
+
+    }
+
+
+    function projectCardHtml(project) {
+
+      const id =
+        project.id ||
+        project.project_id;
+
+      const title =
+        project.title ||
+        project.name ||
+        "Untitled project";
+
+      const type =
+        project.type ||
+        project.tool ||
+        "Project";
+
+      const content =
+        project.content ||
+        project.output ||
+        project.result ||
+        "";
+
+      return `
+
+        <div class="project-card">
+
+          <div class="project-card-icon">
+            ${projectIcon(type)}
+          </div>
+
+          <h3>
+            ${escapeHtml(title)}
+          </h3>
+
+          <p>
+            ${escapeHtml(
+              String(content).slice(0, 130)
+            )}
+          </p>
+
+          <div class="project-card-actions">
+
+            <button
+              class="btn"
+              onclick='copyText(${JSON.stringify(
+                String(content)
+              )})'>
+              Copy
+            </button>
+
+            ${
+              id
+                ? `
+                  <button
+                    class="btn btn-danger"
+                    onclick="deleteProject(${Number(id)})">
+                    Delete
+                  </button>
+                `
+                : ""
+            }
+
+          </div>
+
+        </div>
+
+      `;
+
+    }
+
+
+    async function deleteProject(id) {
+
+      if (!confirm(
+        "Delete this project?"
+      )) {
+        return;
+      }
+
+      try {
+
+        await API.deleteProject(id);
+
+        showToast(
+          "Project deleted."
+        );
+
+        await refreshData();
+
+      } catch (err) {
+
+        showToast(
+          err.message ||
+          "Could not delete project."
+        );
+
+      }
+
+    }
+
+
+    async function copyText(text) {
+
+      try {
+
+        await navigator.clipboard.writeText(
+          text
+        );
+
+        showToast(
+          "Copied to clipboard."
+        );
+
+      } catch {
+
+        showToast(
+          "Copy failed."
+        );
+
+      }
+
+    }
+
+
+    function projectIcon(type) {
+
+      const value =
+        String(type)
+          .toLowerCase();
+
+      if (value.includes("video")) {
+        return "🎬";
+      }
+
+      if (value.includes("image")) {
+        return "✦";
+      }
+
+      if (value.includes("ad")) {
+        return "📈";
+      }
+
+      if (value.includes("campaign")) {
+        return "🚀";
+      }
+
+      return "✍";
+
+    }
+
+
+    /* =========================
+       SETTINGS
+    ========================= */
+
+    function showSettingsTab(
+      tab,
+      button
+    ) {
+
+      document
+        .querySelectorAll(
+          "[id^='settings-']"
+        )
+        .forEach(element => {
+
+          element.classList.add("hidden");
+
+        });
+
+      const target =
+        document.getElementById(
+          `settings-${tab}`
+        );
+
+      if (target) {
+        target.classList.remove("hidden");
+      }
+
+      document
+        .querySelectorAll(
+          ".settings-menu button"
+        )
+        .forEach(item => {
+
+          item.classList.remove(
+            "active"
+          );
+
+        });
+
+      if (button) {
+        button.classList.add("active");
+      }
+
+    }
+
+
+    async function saveAccount() {
+
+      /*
+       * Current backend does not expose a dedicated
+       * profile-update endpoint yet.
+       *
+       * Keep the UI ready without pretending the
+       * server already supports this operation.
+       */
+
+      showToast(
+        "Account settings are ready for the profile API."
+      );
+
+    }
+
+
+    /* =========================
+       BILLING
+    ========================= */
+
+    async function startCheckout(plan) {
+
+      try {
+
+        const data =
+          await API.checkout(plan);
+
+        if (data?.url) {
+
+          window.location.href =
+            data.url;
+
+          return;
+
+        }
+
+        showToast(
+          "Checkout is not active yet."
+        );
+
+      } catch (err) {
+
+        showToast(
+          err.message ||
+          "Checkout is not active yet."
+        );
+
+      }
+
+    }
+
+
+    /* =========================
+       HELPERS
+    ========================= */
+
+    function formatNumber(value) {
+
+      const number =
+        Number(value) || 0;
+
+      return number.toLocaleString();
+
+    }
+
+
+    function escapeHtml(value) {
+
+      return String(value ?? "")
+        .replaceAll("&", "&amp;")
+        .replaceAll("<", "&lt;")
+        .replaceAll(">", "&gt;")
+        .replaceAll('"', "&quot;")
+        .replaceAll("'", "&#039;");
+
+    }
+
+
+    function scrollToFeatures() {
+
+      document
+        .getElementById("features")
+        ?.scrollIntoView({
+          behavior: "smooth"
+        });
+
+    }
+
+
+    function showToast(message) {
+
+      const toast =
+        document.getElementById(
+          "toast"
+        );
+
+      if (!toast) return;
+
+      toast.textContent =
+        message;
+
+      toast.classList.add("show");
+
+      clearTimeout(
+        window.__toastTimer
+      );
+
+      window.__toastTimer =
+        setTimeout(() => {
+
+          toast.classList.remove(
+            "show"
+          );
+
+        }, 2800);
+
+    }
+
+  </script>
+
+</body>
+</html>
