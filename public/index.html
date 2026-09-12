@@ -1,39 +1,49 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" dir="ltr">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <meta name="theme-color" content="#08090d" />
-  <title>AdFlow AI — AI Marketing Studio</title>
+  <meta name="theme-color" content="#09090f" />
+  <meta name="description" content="SQ AI — Create videos, images, content and advertising campaigns with AI." />
+  <title>SQ AI — AI Creative Studio</title>
 
   <style>
+    :root {
+      --bg: #08090d;
+      --bg-soft: #0d0f16;
+      --panel: #11131b;
+      --panel-2: #151824;
+      --border: rgba(255,255,255,.08);
+      --border-strong: rgba(255,255,255,.14);
+      --text: #f5f7fb;
+      --muted: #969cab;
+      --primary: #7c5cff;
+      --primary-2: #5b8cff;
+      --success: #35d07f;
+      --danger: #ff5d6c;
+      --warning: #ffbd5a;
+      --radius: 18px;
+      --shadow: 0 20px 60px rgba(0,0,0,.35);
+    }
+
     * {
       box-sizing: border-box;
       margin: 0;
       padding: 0;
     }
 
-    :root {
-      --bg: #08090d;
-      --panel: #10121a;
-      --panel-2: #151824;
-      --border: #252938;
-      --text: #f7f7fb;
-      --muted: #9499aa;
-      --primary: #7c5cff;
-      --primary-2: #5b8cff;
-      --success: #35d07f;
-      --danger: #ff5f6d;
-      --sidebar: 250px;
+    html {
+      scroll-behavior: smooth;
     }
 
     body {
-      font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      min-height: 100vh;
       background:
-        radial-gradient(circle at 50% -20%, rgba(124, 92, 255, .16), transparent 35%),
+        radial-gradient(circle at 15% 0%, rgba(124,92,255,.13), transparent 30%),
+        radial-gradient(circle at 90% 10%, rgba(91,140,255,.09), transparent 28%),
         var(--bg);
       color: var(--text);
-      min-height: 100vh;
+      font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
     }
 
     button,
@@ -44,12 +54,22 @@
     }
 
     button {
+      border: 0;
       cursor: pointer;
     }
 
     a {
       color: inherit;
       text-decoration: none;
+    }
+
+    .hidden {
+      display: none !important;
+    }
+
+    .container {
+      width: min(1180px, calc(100% - 32px));
+      margin: 0 auto;
     }
 
     /* =========================
@@ -61,69 +81,85 @@
     }
 
     .landing-header {
-      height: 72px;
-      padding: 0 5%;
+      position: sticky;
+      top: 0;
+      z-index: 50;
+      border-bottom: 1px solid var(--border);
+      background: rgba(8,9,13,.78);
+      backdrop-filter: blur(20px);
+    }
+
+    .landing-nav {
+      min-height: 72px;
       display: flex;
       align-items: center;
       justify-content: space-between;
-      border-bottom: 1px solid rgba(255,255,255,.06);
-      background: rgba(8,9,13,.72);
-      backdrop-filter: blur(16px);
-      position: sticky;
-      top: 0;
-      z-index: 20;
+      gap: 20px;
     }
 
     .brand {
       display: flex;
       align-items: center;
-      gap: 10px;
+      gap: 11px;
       font-weight: 800;
-      font-size: 19px;
-      letter-spacing: -.4px;
+      letter-spacing: -.03em;
     }
 
     .brand-mark {
-      width: 36px;
-      height: 36px;
-      border-radius: 11px;
+      width: 38px;
+      height: 38px;
+      border-radius: 12px;
       display: grid;
       place-items: center;
       background: linear-gradient(135deg, var(--primary), var(--primary-2));
-      box-shadow: 0 8px 30px rgba(124,92,255,.28);
+      box-shadow: 0 8px 30px rgba(124,92,255,.3);
       font-weight: 900;
     }
 
-    .landing-nav {
+    .brand-name {
+      font-size: 20px;
+    }
+
+    .nav-actions {
       display: flex;
       align-items: center;
-      gap: 12px;
+      gap: 10px;
     }
 
     .btn {
+      min-height: 44px;
+      padding: 0 17px;
+      border-radius: 12px;
       border: 1px solid var(--border);
       background: var(--panel);
       color: var(--text);
-      border-radius: 11px;
-      padding: 10px 16px;
-      transition: .2s;
+      transition: .2s ease;
     }
 
     .btn:hover {
-      border-color: #3b4052;
       transform: translateY(-1px);
+      border-color: var(--border-strong);
+      background: var(--panel-2);
     }
 
     .btn-primary {
-      border: 0;
       background: linear-gradient(135deg, var(--primary), var(--primary-2));
-      box-shadow: 0 10px 30px rgba(92, 78, 255, .22);
+      border-color: transparent;
+      box-shadow: 0 10px 30px rgba(124,92,255,.22);
+    }
+
+    .btn-primary:hover {
+      filter: brightness(1.08);
+    }
+
+    .btn-danger {
+      color: #fff;
+      background: rgba(255,93,108,.12);
+      border-color: rgba(255,93,108,.2);
     }
 
     .hero {
-      max-width: 1050px;
-      margin: auto;
-      padding: 105px 24px 70px;
+      padding: 100px 0 70px;
       text-align: center;
     }
 
@@ -131,35 +167,40 @@
       display: inline-flex;
       align-items: center;
       gap: 8px;
-      border: 1px solid rgba(124,92,255,.28);
+      padding: 8px 13px;
+      border: 1px solid rgba(124,92,255,.25);
       background: rgba(124,92,255,.09);
-      color: #c9bdff;
       border-radius: 999px;
-      padding: 8px 14px;
+      color: #cfc6ff;
       font-size: 13px;
       margin-bottom: 25px;
     }
 
     .hero h1 {
-      font-size: clamp(42px, 7vw, 78px);
+      max-width: 850px;
+      margin: 0 auto;
+      font-size: clamp(44px, 7vw, 78px);
       line-height: .98;
-      letter-spacing: -4px;
-      max-width: 900px;
-      margin: auto;
-      background: linear-gradient(135deg, #fff, #a99dff 55%, #6da4ff);
+      letter-spacing: -.065em;
+    }
+
+    .hero h1 span {
+      background: linear-gradient(90deg, #fff, #9d8cff, #7ca9ff);
       -webkit-background-clip: text;
+      background-clip: text;
       color: transparent;
     }
 
     .hero p {
-      color: var(--muted);
       max-width: 680px;
-      margin: 25px auto 32px;
+      margin: 28px auto 0;
+      color: var(--muted);
       font-size: 18px;
       line-height: 1.7;
     }
 
     .hero-actions {
+      margin-top: 32px;
       display: flex;
       justify-content: center;
       gap: 12px;
@@ -167,124 +208,159 @@
     }
 
     .landing-tools {
-      max-width: 1100px;
-      margin: 0 auto 90px;
-      padding: 0 24px;
+      padding: 50px 0 100px;
     }
 
-    .tool-grid {
+    .section-title {
+      text-align: center;
+      margin-bottom: 28px;
+    }
+
+    .section-title h2 {
+      font-size: 30px;
+      letter-spacing: -.04em;
+    }
+
+    .section-title p {
+      color: var(--muted);
+      margin-top: 8px;
+    }
+
+    .landing-grid {
       display: grid;
       grid-template-columns: repeat(4, 1fr);
-      gap: 14px;
+      gap: 16px;
     }
 
-    .tool-card {
-      padding: 24px;
-      min-height: 180px;
-      background: linear-gradient(180deg, rgba(21,24,36,.96), rgba(15,17,25,.96));
+    .landing-card {
+      padding: 25px;
+      min-height: 210px;
       border: 1px solid var(--border);
-      border-radius: 18px;
-      transition: .25s;
+      background: linear-gradient(180deg, rgba(255,255,255,.035), rgba(255,255,255,.015));
+      border-radius: 20px;
+      transition: .25s ease;
     }
 
-    .tool-card:hover {
-      transform: translateY(-4px);
-      border-color: rgba(124,92,255,.45);
+    .landing-card:hover {
+      transform: translateY(-5px);
+      border-color: rgba(124,92,255,.3);
+      box-shadow: var(--shadow);
     }
 
-    .tool-icon {
-      font-size: 27px;
-      margin-bottom: 22px;
+    .landing-icon {
+      width: 48px;
+      height: 48px;
+      border-radius: 14px;
+      display: grid;
+      place-items: center;
+      background: rgba(124,92,255,.12);
+      margin-bottom: 20px;
+      font-size: 22px;
     }
 
-    .tool-card h3 {
+    .landing-card h3 {
+      font-size: 18px;
       margin-bottom: 8px;
     }
 
-    .tool-card p {
+    .landing-card p {
       color: var(--muted);
       font-size: 14px;
       line-height: 1.6;
     }
 
+    .landing-footer {
+      border-top: 1px solid var(--border);
+      padding: 30px 0;
+      color: var(--muted);
+      font-size: 13px;
+    }
+
     /* =========================
-       AUTH
+       AUTH MODAL
     ========================= */
 
-    .modal {
+    .modal-backdrop {
       position: fixed;
       inset: 0;
-      background: rgba(0,0,0,.72);
-      backdrop-filter: blur(12px);
-      display: none;
-      align-items: center;
-      justify-content: center;
+      z-index: 200;
+      background: rgba(0,0,0,.7);
+      backdrop-filter: blur(10px);
+      display: grid;
+      place-items: center;
       padding: 20px;
-      z-index: 100;
     }
 
-    .modal.show {
-      display: flex;
-    }
-
-    .auth-box {
-      width: min(420px, 100%);
-      background: #11131b;
-      border: 1px solid var(--border);
-      border-radius: 20px;
+    .modal {
+      width: min(440px, 100%);
+      background: var(--panel);
+      border: 1px solid var(--border-strong);
+      border-radius: 22px;
+      box-shadow: var(--shadow);
       padding: 28px;
-      box-shadow: 0 30px 100px rgba(0,0,0,.55);
     }
 
-    .auth-head {
+    .modal-head {
       display: flex;
       justify-content: space-between;
-      margin-bottom: 25px;
+      gap: 20px;
+      align-items: flex-start;
+      margin-bottom: 24px;
     }
 
-    .close {
-      border: 0;
-      background: transparent;
-      color: var(--muted);
+    .modal-head h2 {
       font-size: 25px;
     }
 
-    .auth-box h2 {
-      margin-bottom: 8px;
-    }
-
-    .auth-box p {
+    .modal-head p {
       color: var(--muted);
-      font-size: 14px;
+      margin-top: 6px;
+      font-size: 13px;
     }
 
-    .field {
+    .close-btn {
+      width: 34px;
+      height: 34px;
+      border-radius: 10px;
+      background: rgba(255,255,255,.05);
+      color: var(--muted);
+    }
+
+    .form-group {
       margin-bottom: 15px;
     }
 
-    .field label {
+    .form-group label {
       display: block;
       margin-bottom: 7px;
       font-size: 13px;
-      color: #c5c8d3;
+      color: #c5c8d2;
     }
 
-    .field input,
-    .field textarea,
-    .field select {
+    .input,
+    .textarea,
+    .select {
       width: 100%;
       border: 1px solid var(--border);
       background: #0b0d13;
-      color: white;
-      border-radius: 11px;
-      padding: 12px 13px;
+      color: var(--text);
+      border-radius: 12px;
       outline: none;
+      padding: 13px 14px;
+      transition: .2s;
     }
 
-    .field input:focus,
-    .field textarea:focus,
-    .field select:focus {
-      border-color: var(--primary);
+    .input:focus,
+    .textarea:focus,
+    .select:focus {
+      border-color: rgba(124,92,255,.65);
+      box-shadow: 0 0 0 3px rgba(124,92,255,.1);
+    }
+
+    .textarea {
+      min-height: 150px;
+      resize: vertical;
+      line-height: 1.6;
     }
 
     .auth-submit {
@@ -295,21 +371,24 @@
     .auth-switch {
       margin-top: 18px;
       text-align: center;
-      font-size: 13px;
       color: var(--muted);
+      font-size: 13px;
     }
 
     .auth-switch button {
       background: none;
-      border: 0;
-      color: #aa9aff;
+      color: #a999ff;
+      margin-left: 4px;
     }
 
-    .message {
-      min-height: 20px;
-      margin-top: 12px;
+    .error-box {
+      padding: 11px 13px;
+      border-radius: 10px;
+      background: rgba(255,93,108,.1);
+      border: 1px solid rgba(255,93,108,.18);
+      color: #ff9da7;
       font-size: 13px;
-      color: var(--danger);
+      margin-bottom: 14px;
     }
 
     /* =========================
@@ -317,1700 +396,81 @@
     ========================= */
 
     .app {
-      display: none;
       min-height: 100vh;
-    }
-
-    .app.active {
       display: flex;
     }
 
     .sidebar {
-      width: var(--sidebar);
-      min-height: 100vh;
-      position: fixed;
-      left: 0;
+      width: 255px;
+      flex: 0 0 255px;
+      height: 100vh;
+      position: sticky;
       top: 0;
-      bottom: 0;
-      background: rgba(12,14,20,.94);
       border-right: 1px solid var(--border);
-      padding: 20px 14px;
-      z-index: 50;
+      background: rgba(9,10,15,.92);
+      padding: 18px 14px;
       display: flex;
       flex-direction: column;
+      overflow-y: auto;
     }
 
     .sidebar-brand {
-      padding: 6px 9px 24px;
+      padding: 4px 8px 22px;
     }
 
     .sidebar-nav {
       display: flex;
       flex-direction: column;
-      gap: 5px;
+      gap: 4px;
     }
 
-    .nav-section {
-      color: #666b7c;
+    .nav-label {
+      color: #666b79;
       font-size: 10px;
-      font-weight: 800;
-      letter-spacing: 1.2px;
       text-transform: uppercase;
-      padding: 20px 10px 7px;
+      letter-spacing: .12em;
+      padding: 18px 10px 7px;
     }
 
-    .nav-btn {
+    .side-btn {
       width: 100%;
-      border: 1px solid transparent;
-      background: transparent;
-      color: #a7abba;
-      text-align: left;
-      padding: 11px 12px;
-      border-radius: 10px;
       display: flex;
       align-items: center;
       gap: 11px;
+      padding: 11px 12px;
+      border-radius: 11px;
+      background: transparent;
+      color: #9b9fab;
+      text-align: left;
       transition: .2s;
     }
 
-    .nav-btn:hover,
-    .nav-btn.active {
-      color: white;
-      background: #171a25;
-      border-color: #252a3a;
+    .side-btn:hover {
+      color: var(--text);
+      background: rgba(255,255,255,.04);
     }
 
-    .nav-btn.active {
-      box-shadow: inset 3px 0 0 var(--primary);
+    .side-btn.active {
+      color: #fff;
+      background: rgba(124,92,255,.14);
+      border: 1px solid rgba(124,92,255,.14);
+    }
+
+    .side-icon {
+      width: 20px;
+      text-align: center;
     }
 
     .sidebar-bottom {
       margin-top: auto;
+      padding-top: 18px;
     }
 
     .credits-box {
       padding: 14px;
       border: 1px solid var(--border);
-      background: linear-gradient(135deg, rgba(124,92,255,.12), rgba(91,140,255,.06));
-      border-radius: 14px;
-      margin-bottom: 10px;
-    }
-
-    .credits-label {
-      color: var(--muted);
-      font-size: 11px;
-      margin-bottom: 6px;
-    }
-
-    .credits-value {
-      font-size: 22px;
-      font-weight: 800;
-    }
-
-    .credits-plan {
-      font-size: 11px;
-      color: #aaa3ff;
-      margin-top: 4px;
-    }
-
-    .logout-btn {
-      width: 100%;
-      background: transparent;
-      border: 1px solid var(--border);
-      color: #999eaf;
-      padding: 10px;
-      border-radius: 10px;
-    }
-
-    .main {
-      width: calc(100% - var(--sidebar));
-      margin-left: var(--sidebar);
-      min-height: 100vh;
-    }
-
-    .topbar {
-      height: 70px;
-      border-bottom: 1px solid var(--border);
-      background: rgba(8,9,13,.78);
-      backdrop-filter: blur(16px);
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      padding: 0 30px;
-      position: sticky;
-      top: 0;
-      z-index: 30;
-    }
-
-    .mobile-menu {
-      display: none;
-      border: 0;
-      background: transparent;
-      color: white;
-      font-size: 24px;
-    }
-
-    .topbar-right {
-      display: flex;
-      align-items: center;
-      gap: 10px;
-    }
-
-    .plan-pill {
-      padding: 7px 11px;
-      border-radius: 999px;
-      background: rgba(124,92,255,.12);
-      border: 1px solid rgba(124,92,255,.25);
-      color: #b8aaff;
-      font-size: 12px;
-    }
-
-    .content {
-      max-width: 1400px;
-      margin: auto;
-      padding: 35px;
-    }
-
-    .page {
-      display: none;
-    }
-
-    .page.active {
-      display: block;
-    }
-
-    .welcome {
-      margin-bottom: 30px;
-    }
-
-    .welcome h1 {
-      font-size: clamp(28px, 4vw, 42px);
-      letter-spacing: -1.5px;
-      margin-bottom: 8px;
-    }
-
-    .welcome p {
-      color: var(--muted);
-    }
-
-    .create-grid {
-      display: grid;
-      grid-template-columns: repeat(4, 1fr);
-      gap: 15px;
-      margin-bottom: 35px;
-    }
-
-    .create-card {
-      border: 1px solid var(--border);
-      background: linear-gradient(145deg, #141722, #0f1118);
-      border-radius: 18px;
-      padding: 21px;
-      text-align: left;
-      min-height: 170px;
-      color: white;
-      transition: .25s;
-    }
-
-    .create-card:hover {
-      border-color: rgba(124,92,255,.5);
-      transform: translateY(-3px);
-    }
-
-    .create-card .big-icon {
-      font-size: 30px;
-      margin-bottom: 20px;
-    }
-
-    .create-card h3 {
-      margin-bottom: 7px;
-    }
-
-    .create-card p {
-      color: var(--muted);
-      font-size: 13px;
-      line-height: 1.55;
-    }
-
-    .section-head {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      margin-bottom: 14px;
-    }
-
-    .section-head h2 {
-      font-size: 18px;
-    }
-
-    .section-head button {
-      background: transparent;
-      border: 0;
-      color: #a99dff;
-      font-size: 13px;
-    }
-
-    .projects {
-      display: grid;
-      grid-template-columns: repeat(3, 1fr);
-      gap: 14px;
-    }
-
-    .project {
-      padding: 18px;
-      border: 1px solid var(--border);
-      background: #11131b;
+      background: rgba(255,255,255,.025);
       border-radius: 15px;
     }
 
-    .project-type {
-      color: #9f94ff;
-      font-size: 11px;
-      text-transform: uppercase;
-      font-weight: 800;
-      letter-spacing: .7px;
-      margin-bottom: 9px;
-    }
-
-    .project h3 {
-      font-size: 15px;
-      margin-bottom: 7px;
-    }
-
-    .project p {
-      color: var(--muted);
-      font-size: 12px;
-      line-height: 1.5;
-    }
-
-    .empty {
-      border: 1px dashed #303445;
-      border-radius: 15px;
-      padding: 35px;
-      text-align: center;
-      color: var(--muted);
-      grid-column: 1 / -1;
-    }
-
-    /* =========================
-       CREATION PAGE
-    ========================= */
-
-    .workspace {
-      max-width: 900px;
-    }
-
-    .workspace-head {
-      margin-bottom: 25px;
-    }
-
-    .workspace-head h1 {
-      font-size: 32px;
-      margin-bottom: 7px;
-    }
-
-    .workspace-head p {
-      color: var(--muted);
-    }
-
-    .workspace-card {
-      background: #11131b;
-      border: 1px solid var(--border);
-      border-radius: 18px;
-      padding: 25px;
-    }
-
-    .workspace-card textarea {
-      min-height: 180px;
-      resize: vertical;
-      line-height: 1.6;
-    }
-
-    .workspace-footer {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      margin-top: 18px;
-      gap: 12px;
-      flex-wrap: wrap;
-    }
-
-    .tool-note {
-      color: var(--muted);
-      font-size: 12px;
-    }
-
-    .result-box {
-      display: none;
-      margin-top: 20px;
-      padding: 18px;
-      border: 1px solid var(--border);
-      background: #0b0d13;
-      border-radius: 14px;
-      white-space: pre-wrap;
-      line-height: 1.7;
-      color: #d8dbe5;
-    }
-
-    .result-box.show {
-      display: block;
-    }
-
-    /* =========================
-       SIMPLE PAGES
-    ========================= */
-
-    .info-grid {
-      display: grid;
-      grid-template-columns: repeat(3, 1fr);
-      gap: 15px;
-    }
-
-    .info-card {
-      border: 1px solid var(--border);
-      background: #11131b;
-      border-radius: 17px;
-      padding: 22px;
-    }
-
-    .info-card .value {
-      font-size: 27px;
-      font-weight: 800;
-      margin: 8px 0;
-    }
-
-    .info-card .label {
-      color: var(--muted);
-      font-size: 13px;
-    }
-
-    .settings-card {
-      max-width: 720px;
-      border: 1px solid var(--border);
-      background: #11131b;
-      border-radius: 18px;
-      padding: 24px;
-    }
-
-    .settings-row {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      padding: 17px 0;
-      border-bottom: 1px solid var(--border);
-      gap: 15px;
-    }
-
-    .settings-row:last-child {
-      border-bottom: 0;
-    }
-
-    .settings-row strong {
-      display: block;
-      margin-bottom: 4px;
-    }
-
-    .settings-row span {
-      color: var(--muted);
-      font-size: 12px;
-    }
-
-    /* =========================
-       MOBILE
-    ========================= */
-
-    @media (max-width: 1000px) {
-      .tool-grid,
-      .create-grid {
-        grid-template-columns: repeat(2, 1fr);
-      }
-
-      .projects,
-      .info-grid {
-        grid-template-columns: 1fr 1fr;
-      }
-    }
-
-    @media (max-width: 760px) {
-      :root {
-        --sidebar: 0px;
-      }
-
-      .landing-header {
-        padding: 0 18px;
-      }
-
-      .landing-nav .btn:first-child {
-        display: none;
-      }
-
-      .hero {
-        padding-top: 75px;
-      }
-
-      .hero h1 {
-        letter-spacing: -2px;
-      }
-
-      .tool-grid,
-      .create-grid,
-      .projects,
-      .info-grid {
-        grid-template-columns: 1fr;
-      }
-
-      .sidebar {
-        transform: translateX(-100%);
-        transition: .25s;
-        width: 260px;
-      }
-
-      .sidebar.open {
-        transform: translateX(0);
-      }
-
-      .main {
-        width: 100%;
-        margin-left: 0;
-      }
-
-      .mobile-menu {
-        display: block;
-      }
-
-      .topbar {
-        padding: 0 16px;
-      }
-
-      .content {
-        padding: 22px 16px 40px;
-      }
-
-      .topbar-right .plan-pill {
-        display: none;
-      }
-
-      .workspace-card {
-        padding: 18px;
-      }
-    }
-  </style>
-</head>
-
-<body>
-
-  <!-- =========================
-       LANDING PAGE
-  ========================== -->
-
-  <div class="landing" id="landing">
-
-    <header class="landing-header">
-      <div class="brand">
-        <div class="brand-mark">A</div>
-        <span>AdFlow AI</span>
-      </div>
-
-      <div class="landing-nav">
-        <button class="btn" onclick="openAuth('login')">Log in</button>
-        <button class="btn btn-primary" onclick="openAuth('signup')">Get started</button>
-      </div>
-    </header>
-
-    <section class="hero">
-      <div class="hero-badge">✦ AI Marketing Studio</div>
-
-      <h1>Turn your ideas into marketing.</h1>
-
-      <p>
-        Create videos, images, content and advertising campaigns
-        with one intelligent creative workspace.
-      </p>
-
-      <div class="hero-actions">
-        <button class="btn btn-primary" onclick="openAuth('signup')">
-          Start creating free
-        </button>
-
-        <button class="btn" onclick="openAuth('login')">
-          I already have an account
-        </button>
-      </div>
-    </section>
-
-    <section class="landing-tools">
-      <div class="tool-grid">
-
-        <div class="tool-card">
-          <div class="tool-icon">🎬</div>
-          <h3>Video</h3>
-          <p>Create scripts, short videos, product videos and social content.</p>
-        </div>
-
-        <div class="tool-card">
-          <div class="tool-icon">🖼️</div>
-          <h3>Image</h3>
-          <p>Create product visuals, ads, thumbnails and social graphics.</p>
-        </div>
-
-        <div class="tool-card">
-          <div class="tool-icon">✍️</div>
-          <h3>Content</h3>
-          <p>Generate copy, hooks, captions, scripts and marketing content.</p>
-        </div>
-
-        <div class="tool-card">
-          <div class="tool-icon">📣</div>
-          <h3>Ads</h3>
-          <p>Build audiences, strategies, creatives and complete campaigns.</p>
-        </div>
-
-      </div>
-    </section>
-
-  </div>
-
-
-  <!-- =========================
-       AUTH MODAL
-  ========================== -->
-
-  <div class="modal" id="authModal">
-
-    <div class="auth-box">
-
-      <div class="auth-head">
-        <div>
-          <h2 id="authTitle">Create your account</h2>
-          <p id="authSubtitle">Start creating with AdFlow AI.</p>
-        </div>
-
-        <button class="close" onclick="closeAuth()">×</button>
-      </div>
-
-      <form onsubmit="submitAuth(event)">
-
-        <div class="field">
-          <label>Email</label>
-          <input
-            id="authEmail"
-            type="email"
-            placeholder="you@example.com"
-            required
-          />
-        </div>
-
-        <div class="field">
-          <label>Password</label>
-          <input
-            id="authPassword"
-            type="password"
-            placeholder="••••••••"
-            minlength="6"
-            required
-          />
-        </div>
-
-        <button class="btn btn-primary auth-submit" id="authSubmit">
-          Create account
-        </button>
-
-        <div class="message" id="authMessage"></div>
-
-      </form>
-
-      <div class="auth-switch">
-        <span id="authSwitchText">Already have an account?</span>
-        <button onclick="toggleAuthMode()" id="authSwitchButton">
-          Log in
-        </button>
-      </div>
-
-    </div>
-
-  </div>
-
-
-  <!-- =========================
-       APP
-  ========================== -->
-
-  <div class="app" id="app">
-
-    <aside class="sidebar" id="sidebar">
-
-      <div class="sidebar-brand">
-        <div class="brand">
-          <div class="brand-mark">A</div>
-          <span>AdFlow AI</span>
-        </div>
-      </div>
-
-      <nav class="sidebar-nav">
-
-        <div class="nav-section">Workspace</div>
-
-        <button class="nav-btn active" onclick="showPage('home', this)">
-          <span>⌂</span>
-          <span>Home</span>
-        </button>
-
-        <button class="nav-btn" onclick="showPage('video', this)">
-          <span>🎬</span>
-          <span>Video</span>
-        </button>
-
-        <button class="nav-btn" onclick="showPage('image', this)">
-          <span>🖼️</span>
-          <span>Image</span>
-        </button>
-
-        <button class="nav-btn" onclick="showPage('content', this)">
-          <span>✍️</span>
-          <span>Content</span>
-        </button>
-
-        <button class="nav-btn" onclick="showPage('ads', this)">
-          <span>📣</span>
-          <span>Ads</span>
-        </button>
-
-        <div class="nav-section">Manage</div>
-
-        <button class="nav-btn" onclick="showPage('projects', this)">
-          <span>▣</span>
-          <span>Projects</span>
-        </button>
-
-        <button class="nav-btn" onclick="showPage('plans', this)">
-          <span>◆</span>
-          <span>Plans</span>
-        </button>
-
-        <button class="nav-btn" onclick="showPage('settings', this)">
-          <span>⚙</span>
-          <span>Settings</span>
-        </button>
-
-      </nav>
-
-      <div class="sidebar-bottom">
-
-        <div class="credits-box">
-          <div class="credits-label">AVAILABLE CREDITS</div>
-          <div class="credits-value" id="sideCredits">—</div>
-          <div class="credits-plan" id="sidePlan">Free plan</div>
-        </div>
-
-        <button class="logout-btn" onclick="logout()">
-          Log out
-        </button>
-
-      </div>
-
-    </aside>
-
-
-    <main class="main">
-
-      <header class="topbar">
-
-        <button class="mobile-menu" onclick="toggleSidebar()">
-          ☰
-        </button>
-
-        <div></div>
-
-        <div class="topbar-right">
-          <div class="plan-pill" id="topPlan">Free</div>
-        </div>
-
-      </header>
-
-
-      <div class="content">
-
-        <!-- HOME -->
-
-        <section class="page active" id="page-home">
-
-          <div class="welcome">
-            <h1>What do you want to create today?</h1>
-            <p>
-              Choose a creative workflow and start building.
-            </p>
-          </div>
-
-          <div class="create-grid">
-
-            <button class="create-card" onclick="showPageByName('video')">
-              <div class="big-icon">🎬</div>
-              <h3>Create a Video</h3>
-              <p>
-                Scripts, ads, product videos, reels and short-form content.
-              </p>
-            </button>
-
-            <button class="create-card" onclick="showPageByName('image')">
-              <div class="big-icon">🖼️</div>
-              <h3>Create an Image</h3>
-              <p>
-                Product images, ad creatives, thumbnails and social visuals.
-              </p>
-            </button>
-
-            <button class="create-card" onclick="showPageByName('content')">
-              <div class="big-icon">✍️</div>
-              <h3>Create Content</h3>
-              <p>
-                Copywriting, hooks, captions, scripts and product descriptions.
-              </p>
-            </button>
-
-            <button class="create-card" onclick="showPageByName('ads')">
-              <div class="big-icon">📣</div>
-              <h3>Build an Ad Campaign</h3>
-              <p>
-                Audience, strategy, hooks, copy, creative and campaign plan.
-              </p>
-            </button>
-
-          </div>
-
-          <div class="section-head">
-            <h2>Recent projects</h2>
-            <button onclick="showPageByName('projects')">View all →</button>
-          </div>
-
-          <div class="projects" id="homeProjects">
-            <div class="empty">Loading your projects...</div>
-          </div>
-
-        </section>
-
-
-        <!-- VIDEO -->
-
-        <section class="page" id="page-video">
-
-          <div class="workspace">
-
-            <div class="workspace-head">
-              <h1>🎬 Video Studio</h1>
-              <p>
-                Turn an idea into a video workflow.
-              </p>
-            </div>
-
-            <div class="workspace-card">
-
-              <div class="field">
-                <label>What do you want to create?</label>
-
-                <select id="videoType">
-                  <option>AI Video Script</option>
-                  <option>Short / Reel</option>
-                  <option>Product Video</option>
-                  <option>Video Ad</option>
-                  <option>Social Video</option>
-                </select>
-              </div>
-
-              <div class="field">
-                <label>Describe your idea</label>
-
-                <textarea
-                  id="videoPrompt"
-                  placeholder="Example: Create a 30-second product video for a premium oversized sweatshirt..."
-                ></textarea>
-              </div>
-
-              <div class="workspace-footer">
-
-                <span class="tool-note">
-                  AI generation workspace
-                </span>
-
-                <button class="btn btn-primary" onclick="generateTool('video')">
-                  Generate
-                </button>
-
-              </div>
-
-              <div class="result-box" id="videoResult"></div>
-
-            </div>
-
-          </div>
-
-        </section>
-
-
-        <!-- IMAGE -->
-
-        <section class="page" id="page-image">
-
-          <div class="workspace">
-
-            <div class="workspace-head">
-              <h1>🖼️ Image Studio</h1>
-              <p>
-                Create visuals for products, ads and social media.
-              </p>
-            </div>
-
-            <div class="workspace-card">
-
-              <div class="field">
-                <label>Image type</label>
-
-                <select id="imageType">
-                  <option>Product Image</option>
-                  <option>Ad Creative</option>
-                  <option>Social Media Post</option>
-                  <option>Thumbnail</option>
-                  <option>Creative Concept</option>
-                </select>
-              </div>
-
-              <div class="field">
-                <label>Describe your image</label>
-
-                <textarea
-                  id="imagePrompt"
-                  placeholder="Example: Premium product advertisement for a black oversized sweatshirt..."
-                ></textarea>
-              </div>
-
-              <div class="workspace-footer">
-
-                <span class="tool-note">
-                  Image generation workspace
-                </span>
-
-                <button class="btn btn-primary" onclick="generateTool('image')">
-                  Generate
-                </button>
-
-              </div>
-
-              <div class="result-box" id="imageResult"></div>
-
-            </div>
-
-          </div>
-
-        </section>
-
-
-        <!-- CONTENT -->
-
-        <section class="page" id="page-content">
-
-          <div class="workspace">
-
-            <div class="workspace-head">
-              <h1>✍️ Content Studio</h1>
-              <p>
-                Generate marketing copy designed around your goal.
-              </p>
-            </div>
-
-            <div class="workspace-card">
-
-              <div class="field">
-                <label>Content type</label>
-
-                <select id="contentType">
-                  <option>Ad Copy</option>
-                  <option>Hooks</option>
-                  <option>Caption</option>
-                  <option>Video Script</option>
-                  <option>Product Description</option>
-                  <option>Call To Action</option>
-                  <option>Social Post</option>
-                </select>
-              </div>
-
-              <div class="field">
-                <label>Your idea</label>
-
-                <textarea
-                  id="contentPrompt"
-                  placeholder="Tell the AI what you want to write..."
-                ></textarea>
-              </div>
-
-              <div class="workspace-footer">
-
-                <span class="tool-note">
-                  Content generation workspace
-                </span>
-
-                <button class="btn btn-primary" onclick="generateTool('content')">
-                  Generate
-                </button>
-
-              </div>
-
-              <div class="result-box" id="contentResult"></div>
-
-            </div>
-
-          </div>
-
-        </section>
-
-
-        <!-- ADS -->
-
-        <section class="page" id="page-ads">
-
-          <div class="workspace">
-
-            <div class="workspace-head">
-              <h1>📣 Campaign Studio</h1>
-              <p>
-                Build a complete marketing campaign from one idea.
-              </p>
-            </div>
-
-            <div class="workspace-card">
-
-              <div class="field">
-                <label>Product or service</label>
-
-                <input
-                  id="campaignProduct"
-                  placeholder="Example: Oversized sweatshirt"
-                />
-              </div>
-
-              <div class="field">
-                <label>Target audience</label>
-
-                <input
-                  id="campaignAudience"
-                  placeholder="Example: Young men and women in Cairo"
-                />
-              </div>
-
-              <div class="field">
-                <label>Campaign goal</label>
-
-                <select id="campaignGoal">
-                  <option>Sales</option>
-                  <option>Leads</option>
-                  <option>Awareness</option>
-                  <option>Website Traffic</option>
-                </select>
-              </div>
-
-              <div class="field">
-                <label>Additional information</label>
-
-                <textarea
-                  id="campaignInfo"
-                  placeholder="Price, offer, platform, product advantages..."
-                ></textarea>
-              </div>
-
-              <div class="workspace-footer">
-
-                <span class="tool-note">
-                  Product → Audience → Strategy → Hooks → Copy → Creative → CTA
-                </span>
-
-                <button class="btn btn-primary" onclick="generateCampaign()">
-                  Build campaign
-                </button>
-
-              </div>
-
-              <div class="result-box" id="campaignResult"></div>
-
-            </div>
-
-          </div>
-
-        </section>
-
-
-        <!-- PROJECTS -->
-
-        <section class="page" id="page-projects">
-
-          <div class="welcome">
-            <h1>Projects</h1>
-            <p>Everything you've created in one place.</p>
-          </div>
-
-          <div class="projects" id="allProjects">
-            <div class="empty">Loading projects...</div>
-          </div>
-
-        </section>
-
-
-        <!-- PLANS -->
-
-        <section class="page" id="page-plans">
-
-          <div class="welcome">
-            <h1>Plans & Credits</h1>
-            <p>Choose the plan that fits your workflow.</p>
-          </div>
-
-          <div class="info-grid">
-
-            <div class="info-card">
-              <div class="label">Current plan</div>
-              <div class="value" id="planName">Free</div>
-              <div class="label">Your active subscription</div>
-            </div>
-
-            <div class="info-card">
-              <div class="label">Available credits</div>
-              <div class="value" id="planCredits">—</div>
-              <div class="label">Credits remaining</div>
-            </div>
-
-            <div class="info-card">
-              <div class="label">Total usage</div>
-              <div class="value" id="planUsage">—</div>
-              <div class="label">Generation requests</div>
-            </div>
-
-          </div>
-
-          <div style="margin-top:25px;max-width:720px;">
-            <div class="info-card">
-              <h3>Upgrade your workspace</h3>
-              <p style="color:var(--muted);margin:10px 0 18px;line-height:1.6;">
-                Paid plans and Paddle checkout will be connected after billing approval.
-              </p>
-              <button class="btn btn-primary" onclick="alert('Billing will be connected in the next build step.')">
-                View plans
-              </button>
-            </div>
-          </div>
-
-        </section>
-
-
-        <!-- SETTINGS -->
-
-        <section class="page" id="page-settings">
-
-          <div class="welcome">
-            <h1>Settings</h1>
-            <p>Manage your account and workspace.</p>
-          </div>
-
-          <div class="settings-card">
-
-            <div class="settings-row">
-              <div>
-                <strong>Email</strong>
-                <span id="settingsEmail">—</span>
-              </div>
-            </div>
-
-            <div class="settings-row">
-              <div>
-                <strong>Plan</strong>
-                <span id="settingsPlan">Free</span>
-              </div>
-            </div>
-
-            <div class="settings-row">
-              <div>
-                <strong>Credits</strong>
-                <span id="settingsCredits">—</span>
-              </div>
-            </div>
-
-            <div class="settings-row">
-              <div>
-                <strong>Account</strong>
-                <span>Your AdFlow AI account is active.</span>
-              </div>
-
-              <button class="btn" onclick="logout()">
-                Log out
-              </button>
-            </div>
-
-          </div>
-
-        </section>
-
-      </div>
-
-    </main>
-
-  </div>
-
-
-  <script>
-
-    let authMode = "signup";
-    let currentUser = null;
-
-    const $ = id => document.getElementById(id);
-
-    /* =========================
-       AUTH
-    ========================== */
-
-    function openAuth(mode) {
-      authMode = mode;
-
-      $("authModal").classList.add("show");
-
-      updateAuthUI();
-
-      setTimeout(() => $("authEmail").focus(), 100);
-    }
-
-    function closeAuth() {
-      $("authModal").classList.remove("show");
-      $("authMessage").textContent = "";
-    }
-
-    function toggleAuthMode() {
-      authMode = authMode === "signup" ? "login" : "signup";
-      updateAuthUI();
-    }
-
-    function updateAuthUI() {
-
-      const signup = authMode === "signup";
-
-      $("authTitle").textContent =
-        signup ? "Create your account" : "Welcome back";
-
-      $("authSubtitle").textContent =
-        signup
-          ? "Start creating with AdFlow AI."
-          : "Log in to your creative workspace.";
-
-      $("authSubmit").textContent =
-        signup ? "Create account" : "Log in";
-
-      $("authSwitchText").textContent =
-        signup ? "Already have an account?" : "Don't have an account?";
-
-      $("authSwitchButton").textContent =
-        signup ? "Log in" : "Create account";
-
-      $("authMessage").textContent = "";
-    }
-
-    async function submitAuth(event) {
-
-      event.preventDefault();
-
-      const email = $("authEmail").value.trim();
-      const password = $("authPassword").value;
-
-      $("authMessage").textContent = "Please wait...";
-
-      const endpoint =
-        authMode === "signup"
-          ? "/api/auth/signup"
-          : "/api/auth/login";
-
-      try {
-
-        const response = await fetch(endpoint, {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json"
-          },
-          credentials: "include",
-          body: JSON.stringify({
-            email,
-            password
-          })
-        });
-
-        const data = await response.json();
-
-        if (!response.ok) {
-          throw new Error(data.error || "Authentication failed");
-        }
-
-        currentUser = data.user || data;
-
-        closeAuth();
-
-        await loadDashboard();
-
-      } catch (error) {
-
-        $("authMessage").textContent =
-          error.message || "Something went wrong.";
-
-      }
-
-    }
-
-
-    /* =========================
-       DASHBOARD
-    ========================== */
-
-    async function checkSession() {
-
-      try {
-
-        const response = await fetch("/api/me", {
-          credentials: "include"
-        });
-
-        if (!response.ok) {
-          return;
-        }
-
-        const data = await response.json();
-
-        if (data && data.user) {
-          currentUser = data.user;
-          await loadDashboard();
-        }
-
-      } catch (error) {
-        console.log("No active session");
-      }
-
-    }
-
-    async function loadDashboard() {
-
-      $("landing").style.display = "none";
-      $("app").classList.add("active");
-
-      updateUserUI();
-
-      await Promise.all([
-        loadUsage(),
-        loadProjects()
-      ]);
-
-    }
-
-    function updateUserUI() {
-
-      if (!currentUser) return;
-
-      const email =
-        currentUser.email ||
-        currentUser.user?.email ||
-        "Account";
-
-      $("settingsEmail").textContent = email;
-
-      const plan =
-        currentUser.plan ||
-        currentUser.user?.plan ||
-        "Free";
-
-      $("sidePlan").textContent = plan;
-      $("topPlan").textContent = plan;
-      $("planName").textContent = plan;
-      $("settingsPlan").textContent = plan;
-    }
-
-
-    /* =========================
-       USAGE
-    ========================== */
-
-    async function loadUsage() {
-
-      try {
-
-        const response = await fetch("/api/usage", {
-          credentials: "include"
-        });
-
-        if (!response.ok) return;
-
-        const data = await response.json();
-
-        const credits =
-          data.credits ??
-          data.remaining ??
-          data.balance ??
-          0;
-
-        const usage =
-          data.total ??
-          data.total_usage ??
-          data.count ??
-          0;
-
-        $("sideCredits").textContent = credits;
-        $("planCredits").textContent = credits;
-        $("planUsage").textContent = usage;
-        $("settingsCredits").textContent = credits;
-
-      } catch (error) {
-
-        console.log("Usage error", error);
-
-      }
-
-    }
-
-
-    /* =========================
-       PROJECTS
-    ========================== */
-
-    async function loadProjects() {
-
-      try {
-
-        const response = await fetch("/api/projects", {
-          credentials: "include"
-        });
-
-        if (!response.ok) {
-          renderProjects([]);
-          return;
-        }
-
-        const data = await response.json();
-
-        const projects =
-          Array.isArray(data)
-            ? data
-            : (data.projects || []);
-
-        renderProjects(projects);
-
-      } catch (error) {
-
-        renderProjects([]);
-
-      }
-
-    }
-
-    function renderProjects(projects) {
-
-      const containers = [
-        $("homeProjects"),
-        $("allProjects")
-      ];
-
-      if (!projects.length) {
-
-        containers.forEach(container => {
-
-          if (!container) return;
-
-          container.innerHTML = `
-            <div class="empty">
-              <div style="font-size:28px;margin-bottom:10px;">✦</div>
-              <strong>No projects yet</strong>
-              <div style="margin-top:7px;">
-                Your creations will appear here.
-              </div>
-            </div>
-          `;
-
-        });
-
-        return;
-      }
-
-      const html = projects
-        .slice(0, 12)
-        .map(project => {
-
-          const title =
-            escapeHtml(
-              project.title ||
-              project.name ||
-              "Untitled project"
-            );
-
-          const type =
-            escapeHtml(
-              project.type ||
-              project.tool ||
-              "Project"
-            );
-
-          const content =
-            escapeHtml(
-              project.description ||
-              project.prompt ||
-              "Creative project"
-            );
-
-          return `
-            <div class="project">
-              <div class="project-type">${type}</div>
-              <h3>${title}</h3>
-              <p>${content}</p>
-            </div>
-          `;
-
-        })
-        .join("");
-
-      $("homeProjects").innerHTML = html;
-      $("allProjects").innerHTML = html;
-    }
-
-
-    /* =========================
-       NAVIGATION
-    ========================== */
-
-    function showPage(name, button) {
-
-      document.querySelectorAll(".page")
-        .forEach(page => page.classList.remove("active"));
-
-      const page = $("page-" + name);
-
-      if (page) {
-        page.classList.add("active");
-      }
-
-      document.querySelectorAll(".nav-btn")
-        .forEach(btn => btn.classList.remove("active"));
-
-      if (button) {
-        button.classList.add("active");
-      }
-
-      $("sidebar").classList.remove("open");
-
-      if (name === "projects") {
-        loadProjects();
-      }
-
-      if (name === "home") {
-        loadUsage();
-        loadProjects();
-      }
-
-    }
-
-    function showPageByName(name) {
-
-      const button = [...document.querySelectorAll(".nav-btn")]
-        .find(btn => btn.getAttribute("onclick")?.includes(`'${name}'`));
-
-      showPage(name, button);
-    }
-
-    function toggleSidebar() {
-      $("sidebar").classList.toggle("open");
-    }
-
-
-    /* =========================
-       TOOL GENERATION
-    ========================== */
-
-    async function generateTool(type) {
-
-      let prompt = "";
-      let subtype = "";
-
-      if (type === "video") {
-        prompt = $("videoPrompt").value.trim();
-        subtype = $("videoType").value;
-      }
-
-      if (type === "image") {
-        prompt = $("imagePrompt").value.trim();
-        subtype = $("imageType").value;
-      }
-
-      if (type === "content") {
-        prompt = $("contentPrompt").value.trim();
-        subtype = $("contentType").value;
-      }
-
-      if (!prompt) {
-        alert("Please describe what you want to create.");
-        return;
-      }
-
-      const result =
-        type === "video"
-          ? $("videoResult")
-          : type === "image"
-          ? $("imageResult")
-          : $("contentResult");
-
-      result.classList.add("show");
-      result.textContent = "Generating...";
-
-      try {
-
-        const response = await fetch("/api/tools/generate", {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json"
-          },
-          credentials: "include",
-          body: JSON.stringify({
-            tool: type,
-            type: subtype,
-            prompt
-          })
-        });
-
-        const data = await response.json();
-
-        if (!response.ok) {
-          throw new Error(data.error || "Generation failed");
-        }
-
-        result.textContent =
-          data.output ||
-          data.result ||
-          data.text ||
-          JSON.stringify(data, null, 2);
-
-        await loadUsage();
-        await loadProjects();
-
-      } catch (error) {
-
-        result.textContent =
-          error.message || "Something went wrong.";
-
-      }
-
-    }
-
-
-    /* =========================
-       CAMPAIGN
-    ========================== */
-
-    async function generateCampaign() {
-
-      const product = $("campaignProduct").value.trim();
-      const audience = $("campaignAudience").value.trim();
-      const goal = $("campaignGoal").value;
-      const info = $("campaignInfo").value.trim();
-
-      if (!product || !audience) {
-        alert("Please enter the product and target audience.");
-        return;
-      }
-
-      const result = $("campaignResult");
-
-      result.classList.add("show");
-      result.textContent = "Building campaign...";
-
-      try {
-
-        const response = await fetch("/api/campaigns/generate", {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json"
-          },
-          credentials: "include",
-          body: JSON.stringify({
-            product,
-            audience,
-            goal,
-            info
-          })
-        });
-
-        const data = await response.json();
-
-        if (!response.ok) {
-          throw new Error(data.error || "Campaign generation failed");
-        }
-
-        result.textContent =
-          data.output ||
-          data.result ||
-          JSON.stringify(data, null, 2);
-
-        await loadUsage();
-        await loadProjects();
-
-      } catch (error) {
-
-        result.textContent =
-          error.message || "Something went wrong.";
-
-      }
-
-    }
-
-
-    /* =========================
-       LOGOUT
-    ========================== */
-
-    async function logout() {
-
-      try {
-
-        await fetch("/api/auth/logout", {
-          method: "POST",
-          credentials: "include"
-        });
-
-      } catch (error) {
-        console.log(error);
-      }
-
-      currentUser = null;
-
-      $("app").classList.remove("active");
-      $("landing").style.display = "block";
-
-      document.querySelectorAll(".page")
-        .forEach(page => page.classList.remove("active"));
-
-      $("page-home").classList.add("active");
-
-    }
-
-
-    /* =========================
-       HELPERS
-    ========================== */
-
-    function escapeHtml(value) {
-
-      return String(value)
-        .replace(/&/g, "&amp;")
-        .replace(/</g, "&lt;")
-        .replace(/>/g, "&gt;")
-        .replace(/"/g, "&quot;")
-        .replace(/'/g, "&#039;");
-
-    }
-
-    $("authModal").addEventListener("click", event => {
-
-      if (event.target === $("authModal")) {
-        closeAuth();
-      }
-
-    });
-
-    checkSession();
-
-  </script>
-
-</body>
-</html>
+    .credits
