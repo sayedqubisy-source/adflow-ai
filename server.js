@@ -227,11 +227,99 @@ function providerStatus(type) {
   const envName = { text:'AI_TEXT_PROVIDER', image:'AI_IMAGE_PROVIDER', video:'AI_VIDEO_PROVIDER', audio:'AI_AUDIO_PROVIDER' }[type] || 'AI_TEXT_PROVIDER';
   return { configured:Boolean(process.env[envName]), provider:process.env[envName] || null, envName };
 }
-async function aiEngine({ tool, type }) {
+
+const OPENROUTER_URL = 'https://openrouter.ai/api/v1/chat/completions';
+const OPENROUTER_DEFAULT_MODEL = process.env.OPENROUTER_MODEL || 'openrouter/free';
+async function callOpenRouter(prompt, options = {}) {
+  const apiKey = process.env.OPENROUTER_API_KEY;
+  if (!apiKey) return { ok:false, error:'provider_not_configured', message:'OPENROUTER_API_KEY is not configured.' };
+  const body = {
+    model: options.model || OPENROUTER_DEFAULT_MODEL,
+    messages: [
+      { role:'system', content:'You are SQ AI, a professional AI creation assistant. Produce useful, polished output. Follow the user request exactly.' },
+      { role:'user', content:prompt }
+    ],
+    temperature: options.temperature ?? 0.7,
+    max_tokens: options.max_tokens ?? 1200
+  };
+  try {
+    const response = await fetch(OPENROUTER_URL, {
+      method:'POST',
+      headers:{
+        Authorization:`Bearer ${apiKey}`,
+        'Content-Type':'application/json',
+        'HTTP-Referer':process.env.OPENROUTER_SITE_URL || 'https://sq-ai.bonto.run/',
+        'X-OpenRouter-Title':'SQ AI'
+      },
+      body:JSON.stringify(body)
+    });
+    const data = await response.json().catch(() => ({}));
+    if (!response.ok) {
+      console.error('openrouter_error', response.status, data);
+      return { ok:false, error:'provider_request_failed', message:data?.error?.message || `OpenRouter returned HTTP ${response.status}.`, status:response.status };
+    }
+    const output = data?.choices?.[0]?.message?.content;
+    if (!output) return { ok:false, error:'provider_empty_response', message:'OpenRouter returned an empty response.' };
+    return { ok:true, output, provider:'openrouter', model:data?.model || body.model };
+  } catch (error) {
+    console.error('openrouter_network_error', error);
+    return { ok:false, error:'provider_request_failed', message:'Could not reach OpenRouter.' };
+  }
+}
+
+function buildToolPrompt(tool, input, request = {}) {
+  const context = request.context ? `\nAdditional context:\n${String(request.context).slice(0,5000)}` : '';
+  const instructions = {
+    video_script:'Create a complete video script with hook, scene-by-scene visuals, spoken narration, on-screen text, and CTA.',
+    ad_video:'Create a conversion-focused advertising video concept and script with hook, scenes, voice-over, text overlays, and CTA.',
+    product_video:'Create a professional product video script showing the product, benefits, use cases, scenes, narration, and CTA.',
+    shorts:'Create a short-form vertical video script optimized for Reels/Shorts, with a strong opening, fast pacing, and CTA.',
+    long_to_shorts:'Turn the supplied idea or transcript into several short-video concepts. Give hooks, key segment, caption, and CTA for each.',
+    hooks:'Generate 10 strong hooks tailored to the request. Keep them varied and scroll-stopping.',
+    voiceover:'Write a natural voice-over script suitable for the requested video or advertisement.',
+    subtitles:'Create concise subtitle-ready lines with natural breaks and readable pacing.',
+    image_prompt:'Create a detailed professional image-generation prompt describing subject, composition, lighting, camera, style, environment, and quality.',
+    product_image:'Create a premium product photography prompt with clean composition, realistic materials, lighting, and commercial presentation.',
+    ad_creative:'Create a professional advertising visual concept and image prompt designed for conversion.',
+    thumbnail:'Create a high-click thumbnail concept and image-generation prompt.',
+    background:'Create a clean, realistic background prompt suitable for product or advertising creatives.',
+    variations:'Create 5 distinct creative variations based on the request.',
+    writer:'Write polished content for the request with clear structure and engaging language.',
+    ad_copy:'Write conversion-focused ad copy with headline, primary text, benefits, and CTA.',
+    content_hooks:'Generate strong content hooks tailored to the audience and topic.',
+    captions:'Create engaging social-media captions with suitable CTA options.',
+    script:'Write a complete content script with an engaging opening, useful body, and CTA.',
+    product_description:'Write a persuasive product description highlighting benefits, features, audience, and CTA.',
+    cta:'Generate 10 concise CTA options matched to the request.',
+    rewrite:'Rewrite the supplied text to be clearer, stronger, and more professional while preserving its meaning.',
+    summarize:'Summarize the supplied content into clear, useful key points.',
+    translate:'Translate the supplied text accurately while preserving meaning, tone, and formatting.',
+    content_calendar:'Create a practical 30-day content calendar with topics, formats, hooks, and CTAs.',
+    persona:'Create a detailed customer persona including needs, pain points, motivations, objections, and messaging angles.',
+    audience_analysis:'Analyze the target audience and provide demographics, pain points, desires, objections, and content angles.',
+    campaign_generator:'Create a complete advertising campaign plan including objective, audience, offer, funnel, creatives, copy, and CTA.',
+    audience:'Define the best target audience for the request with segments, interests, pain points, and buying triggers.',
+    strategy:'Create a practical advertising strategy with positioning, funnel, creative direction, and optimization plan.',
+    ad_hooks:'Generate high-converting advertising hooks for the request.',
+    ad_copy_ads:'Create multiple ad-copy variants for testing, each with headline, primary text, and CTA.',
+    creative_concepts:'Create multiple advertising creative concepts with visual direction and messaging.',
+    video_script_ads:'Create a conversion-focused ad video script with scenes, narration, text overlays, and CTA.',
+    campaign_cta:'Generate campaign CTA variants matched to the offer and audience.',
+    campaign_plan:'Create a structured campaign plan covering objective, audience, offer, channels, creatives, budget logic, and KPIs.',
+    competitor_analysis:'Create a competitor-analysis framework and actionable positioning recommendations based on the supplied information.',
+    budget_roas:'Create a practical budget and ROAS planning framework with assumptions, KPIs, and optimization steps.'
+  };
+  return `${instructions[tool.id] || 'Create the best possible result for the request.'}\n\nUser request:\n${input}${context}\n\nReturn only the useful result, without discussing internal tools or providers.`;
+}
+
+async function aiEngine({ tool, type, input, request }) {
   const kind = ['video','image','audio','text'].includes(type) ? type : (['image','video'].includes(tool.category) ? tool.category : 'text');
   const status = providerStatus(kind);
-  if (!status.configured) return { ok:false, error:'provider_not_configured', message:`No ${kind} AI provider is configured yet. The tool is registered and ready for a provider adapter.`, tool:tool.id, category:tool.category, engine:'SQ AI Engine', provider:null };
-  return { ok:false, error:'provider_adapter_not_implemented', message:`Provider ${status.provider} is configured but its adapter is not implemented yet.`, tool:tool.id, category:tool.category, engine:'SQ AI Engine', provider:status.provider };
+  if (!status.configured) return { ok:false, error:'provider_not_configured', message:`No ${kind} AI provider is configured yet.`, tool:tool.id, category:tool.category, engine:'SQ AI Engine', provider:null };
+  if (status.provider === 'openrouter' && kind === 'text') {
+    return callOpenRouter(buildToolPrompt(tool, input, request), { model:process.env.OPENROUTER_MODEL || OPENROUTER_DEFAULT_MODEL });
+  }
+  return { ok:false, error:'provider_adapter_not_implemented', message:`Provider ${status.provider} is configured but its ${kind} adapter is not implemented yet.`, tool:tool.id, category:tool.category, engine:'SQ AI Engine', provider:status.provider };
 }
 app.get('/api/tools', (req,res) => res.json({ tools:allTools(), registry:TOOL_REGISTRY }));
 app.post('/api/tools/generate', auth, async (req,res) => {
@@ -241,10 +329,10 @@ app.post('/api/tools/generate', auth, async (req,res) => {
   if (!tool) return res.status(400).json({ error:'unknown_tool', message:'The requested tool is not registered.' });
   if (!input) return res.status(400).json({ error:'input_required' });
   if (req.user.credits < 1) return res.status(402).json({ error:'credits_exhausted' });
-  const result = await aiEngine({ tool, type:requestedType || tool.category });
-  if (!result.ok) return res.status(503).json(result);
+  const result = await aiEngine({ tool, type:requestedType || tool.category, input, request:req.body });
+  if (!result.ok) return res.status(result.status || 503).json(result);
   if (!spendCredit(req.user.id,'/api/tools/generate',tool.id)) return res.status(402).json({ error:'credits_exhausted' });
-  res.json({ data:result.output, credits_remaining:getUserById(req.user.id).credits });
+  res.json({ data:result.output, provider:result.provider, model:result.model, credits_remaining:getUserById(req.user.id).credits });
 });
 
 app.post('/api/generate', auth, (req,res) => {
